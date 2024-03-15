@@ -1,0 +1,23 @@
+FROM python:3.9-slim
+
+# Nastavení pracovního adresáře ve složce /code
+WORKDIR /code
+
+# Kopírování souboru s požadavky do pracovního adresáře
+COPY requirements.txt .
+
+# Instalace požadovaných balíčků
+RUN pip install -r requirements.txt
+
+# Kopírování zbylých souborů do pracovního adresáře
+COPY . .
+
+# Nastavení proměnné prostředí pro FastAPI
+ENV PORT=8000
+ENV MODULE_NAME=app
+
+# Exponování portu, na kterém bude FastAPI naslouchat
+EXPOSE $PORT
+
+# Spuštění FastAPI aplikace pomocí uvicorn
+CMD ["uvicorn", "--host", "0.0.0.0", "--port", "8000", "app:app"]
