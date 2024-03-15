@@ -1,5 +1,5 @@
 /* Zde zapisujeme css pro article */
-article{
+body{
     font-family: cursive;
     background-color: rgba(0, 0, 0, 0.897);
     color: aliceblue;
@@ -33,16 +33,14 @@ td {
 
 /* Zde zapisujeme css pro footer */
 footer {
-    position: fixed; /* Umožňuje umístit footer na pevné místo na stránce */
-    bottom: 0; /* Zarovná footer dolů */
-    width: 100%; /* Zajistí, že footer zabere celou šířku stránky */
-    background-color: rgba(0, 0, 0, 0.897);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
     color: aliceblue;
     text-align: center;
-    padding: 10px; /* Přidá polštářek kolem obsahu pro lepší čitelnost */
+    padding: 10px;
 }
-
-
 
 /* Zde zapisujeme css pro header */
 header{
