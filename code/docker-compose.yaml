@@ -1,16 +1,18 @@
 version: '3'
 
 services:
-  app:
-    build: .
-    ports:
-      - "8000:8000"
-    depends_on:
-      - mariadb
+  #app:
+   # build: .
+   # ports:
+    #  - "8000:8000"
+    #depends_on:
+     # - mariadb
 
   mariadb:
     image: mariadb
     restart: always
+    ports: 
+      - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: secret
       MYSQL_DATABASE: fin_db
