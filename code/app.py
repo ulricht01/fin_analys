@@ -7,6 +7,7 @@ import schedule
 import threading
 
 database.vytvor_tabulky()
+app_logic.get_rates()
 schedule.every().hour.do(app_logic.job)
 scheduler_thread = threading.Thread(target=app_logic.run_scheduler)
 scheduler_thread.start()
@@ -14,7 +15,6 @@ scheduler_thread.start()
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
 @app.route("/")
 async def main_page(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})

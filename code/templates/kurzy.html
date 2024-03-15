@@ -15,22 +15,23 @@
     <header>
         {% include "navigace.html" %}
     </header>
-
-    <h1> Kurzy </h1>
-    <table>
-        <tr> 
-            <th> Měna</th>
-            <th> CZK </th>
-        </tr>
-        <tr>
-            <td>USD</td>
-            <td>{{usd_rate}}</td>
-        </tr>
-        <tr>
-            <td>EUR</td>
-            <td>{{eur_rate}}</td>
-        </tr>
-    </table>
+    <article>
+        <h1> Kurzy </h1>
+        <table>
+            <tr> 
+                <th> Měna</th>
+                <th> CZK </th>
+            </tr>
+            <tr>
+                <td>USD</td>
+                <td>{{usd_rate}}</td>
+            </tr>
+            <tr>
+                <td>EUR</td>
+                <td>{{eur_rate}}</td>
+            </tr>
+        </table>
+    </article>
     <footer>
         {% include "paticka.html" %}
     </footer>
