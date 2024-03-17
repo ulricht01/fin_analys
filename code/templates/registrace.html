@@ -1,0 +1,40 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Analýza financí">
+    <meta name="keywords" content="Finance, analýza, grafy">
+    <meta name="author" content="Tomáš Ulrich">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/styles/styles.css">
+    <title> Registrace </title>
+</head>
+
+<body>
+
+    <header>
+        {% include "navigace.html" %}
+    </header>
+    <div class="sign_form" name="sign_form" id="sign_form">
+        <form method="post" action="/registrace">
+            <label for="mail"> Email:</label>
+            <input type="email" name="mail" id="mail" placeholder="uzivatel@example.cz" required maxlength="70">
+            <label for="uzivatel_input"> Uživatelské jméno:</label>
+            <input type="text" name="uzivatel_input" id="uzivatel_input" placeholder="uzivatel" required maxlength="25">
+            <label for="heslo">Heslo:</label>
+            <input type="password" name="heslo" id="heslo" required placeholder="heslo">
+            <label for="heslo_znovu">Znovu heslo:</label>
+            <input type="password" name="heslo_znovu" id="heslo_znovu" required placeholder="heslo_znovu">
+            <input type="submit" name="registrace_submit" id="registrace_submit" value="Potvrdit">
+        </form>
+    </div>
+
+    <footer>
+        {% include "paticka.html" %}
+    </footer>
+</body>
+
+
+
+
+</html>

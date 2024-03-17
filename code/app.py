@@ -36,13 +36,44 @@ async def zadej_prijem(request: Request):
     database.pridej_prijem_do_db(prijem, mena, datum, cas, popis)
     return RedirectResponse(url="/prijmy", status_code=303)
 
+@app.get("/registrace")
+async def registrace(request: Request):
+    return templates.TemplateResponse("registrace.html", {"request": request})
+
+@app.post("/registrace", response_class=HTMLResponse)
+async def zadej_registraci(request: Request):
+    form_data = await request.form()
+    mail = form_data.get("mail")
+    uzivatel = form_data.get("uzivatel_input")
+    heslo = form_data.get("heslo")
+    heslo_znovu = form_data.get("heslo_znovu")
+    if uzivatel != database.uzivatel_check(uzivatel) and mail != database.mail_check(mail) and heslo == heslo_znovu:
+        database.pridej_uzivatele_do_db(mail, uzivatel, heslo)
+        return RedirectResponse(url="/prihlaseni", status_code=303)
+    else:
+        return RedirectResponse(url="/registrace", status_code=303)
+    
+@app.get("/prihlaseni")
+async def prihlaseni(request: Request):
+    return templates.TemplateResponse("prihlaseni.html", {"request": request})
+
+@app.post("/prihlaseni", response_class=HTMLResponse)
+async def zadej_prihlaseni(request: Request):
+    form_data = await request.form()
+    uzivatel = form_data.get("uzivatel_input")
+    heslo = form_data.get("heslo")
+    if uzivatel == database.uzivatel_check(uzivatel) and heslo == database.heslo_check(uzivatel):
+            return RedirectResponse(url="/souhrn", status_code=303)
+    else:        
+        return RedirectResponse(url="/prihlaseni", status_code=303)
+
 
 @app.get("/vydaje")
 async def vydaje(request: Request):
     return templates.TemplateResponse("vydaje.html", {"request": request})
 
 @app.post("/vydaje", response_class=HTMLResponse)
-async def zadej_prijem(request: Request):
+async def zadej_vydaje(request: Request):
     form_data = await request.form()
     vydaj = form_data.get("vydaj_input")
     mena = form_data.get("mena")

@@ -6,10 +6,14 @@
 </head>
 
 <body>
-    <a href="prijmy"> Příjmy </a>
-    <a href="vydaje"> Výdaje </a>
-    <a href="souhrn"> Souhrn </a>
-    <a href="kurzy"> Kurzy   </a>  
+    <ul>
+        <li><a href="registrace" {% if request.path == '/registrace' %}class="active"{% endif %}>Registrace</a></li>
+        <li><a href="prihlaseni" {% if request.path == '/prihlaseni' %}class="active"{% endif %}>Přihlášení</a></li>
+        <li><a href="prijmy" {% if request.path == '/prijmy' %}class="active"{% endif %}>Příjmy</a></li>
+        <li><a href="vydaje" {% if request.path == '/vydaje' %}class="active"{% endif %}>Výdaje</a></li>
+        <li><a href="souhrn" {% if request.path == '/souhrn' %}class="active"{% endif %}>Souhrn</a></li>
+        <li><a href="kurzy" {% if request.path == '/kurzy' %}class="active"{% endif %}>Kurzy</a></li>
+    </ul>    
     <hr> 
 </body>
 

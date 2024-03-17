@@ -47,13 +47,30 @@ header{
     text-align: center;
 }
 
-header a{
+header ul {
+    list-style-type: none; /* Odstraní body v seznamu */
+    margin-right: 0;
+    padding: 0;
+    text-align: center; /* Zarovná odkazy do středu */
+}
+
+header ul li {
+    display: inline; /* Odkazy budou vedle sebe */
+    margin: 5%; /* Mezera mezi odkazy */
+}
+
+header a {
     color: aliceblue;
-    margin: 5%;
     text-decoration: none;
     text-shadow: 5px 3px 10px;
 }
 
+.active {
+    background-color: #4f5002; /* Zelená barva pozadí pro aktivní záložku */
+    color: aliceblue; /* Bílá barva textu pro aktivní záložku */
+    padding: 8px; /* Odsazení vnitřního okraje */
+    border-radius: 5px; /* Zaoblení rohů */
+}
 .input_form {
     width: 25%; /* Šířka formuláře */
     margin-left: 10%; /* Zarovnání na střed stránky */
@@ -82,3 +99,33 @@ header a{
 .input_form input[type="submit"]:hover {
     background-color: #45a049; /* Barva pozadí tlačítka při najetí myši */
 }
+
+.sign_form {
+    width: 25%; /* Šířka formuláře */
+    margin: 0 auto; /* Zarovnání na střed stránky */
+}
+
+.sign_form label {
+    display: block; /* Každý popisek na novém řádku */
+    margin-bottom: 5px; /* Mezera pod popiskem */
+}
+
+.sign_form input,
+.sign_form select {
+    width: calc(100% - 120px); /* Šířka vstupních polí */
+    padding: 8px; /* Odsazení vnitřního okraje */
+    margin-bottom: 10px; /* Mezera pod vstupními poli */
+}
+
+.sign_form input[type="submit"] {
+    background-color: #4CAF50; /* Barva pozadí tlačítka */
+    color: white; /* Barva textu na tlačítku */
+    padding: 10px 20px; /* Odsazení vnitřního okraje */
+    border: none; /* Odstranění rámečku */
+    cursor: pointer; /* Ukázání ukazatele myši při najetí na tlačítko */
+}
+
+.sign_form input[type="submit"]:hover {
+    background-color: #45a049; /* Barva pozadí tlačítka při najetí myši */
+}
+

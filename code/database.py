@@ -46,8 +46,30 @@ def vytvor_tabulky():
             popis VARCHAR(45)
         );
         """)
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS uzivatele (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            email VARCHAR(70),
+            uzivatel VARCHAR(25),
+            heslo VARCHAR(70),
+            dt_create TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        """)
     conn.commit()
     conn.close()
+    
+def pridej_uzivatele_do_db(mail, uzivatel, heslo):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        INSERT INTO uzivatele (email, uzivatel, heslo)
+        VALUES (%s, %s, %s)
+        """, (mail, uzivatel, heslo)
+    )
+    conn.commit()
+    conn.close()
+    
     
 def pridej_prijem_do_db(prijem, mena, datum, cas, popis):
     conn, cursor = navaz_spojeni()
@@ -119,4 +141,44 @@ def get_eur():
     conn.close()
     return eur[0]
 
-    
+def heslo_check(uzivatel):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+    """
+    SELECT heslo FROM uzivatele
+    WHERE uzivatel = %s
+    """, (uzivatel,))
+    heslo = cursor.fetchone()
+    conn.commit()
+    conn.close()
+    return heslo[0]
+
+def uzivatel_check(uzivatel):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+    """
+    SELECT uzivatel FROM uzivatele
+    WHERE uzivatel = %s
+    """, (uzivatel,))
+    uzivatel = cursor.fetchone()
+    conn.commit()
+    conn.close()
+    if uzivatel == None:
+        return None
+    else:
+        return uzivatel[0]
+
+def mail_check(mail):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+    """
+    SELECT email FROM uzivatele
+    WHERE email = %s
+    """, (mail,))
+    mail = cursor.fetchone()
+    conn.commit()
+    conn.close()
+    if mail == None:
+        return None
+    else:
+        return mail[0]

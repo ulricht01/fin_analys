@@ -1,0 +1,36 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Analýza financí">
+    <meta name="keywords" content="Finance, analýza, grafy">
+    <meta name="author" content="Tomáš Ulrich">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/styles/styles.css">
+    <title> Přihlášení </title>
+</head>
+
+<body>
+
+    <header>
+        {% include "navigace.html" %}
+    </header>
+    <div class="sign_form" name="sign_form" id="sign_form">
+        <form method="post" action="/prihlaseni">
+            <label for="uzivatel_input"> Uživatelské jméno:</label>
+            <input type="text" name="uzivatel_input" id="uzivatel_input" placeholder="uzivatel" required maxlength="25">
+            <label for="heslo">Heslo:</label>
+            <input type="password" name="heslo" id="heslo" required placeholder="heslo">
+            <input type="submit" name="prihlaseni_submit" id="prihlaseni_submit" value="Potvrdit">
+        </form>
+    </div>
+
+    <footer>
+        {% include "paticka.html" %}
+    </footer>
+</body>
+
+
+
+
+</html>
