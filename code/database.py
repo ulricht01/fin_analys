@@ -22,8 +22,52 @@ def vytvor_tabulky():
             mena VARCHAR(3),
             czk DOUBLE NOT NULL,
             dt_create DATE NOT NULL DEFAULT CURRENT_DATE
-        )
+        );
         """)
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS prijmy (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            prijem INT(10),
+            mena VARCHAR(3),
+            datum DATE,
+            cas TIME,
+            popis VARCHAR(45)
+        );
+        """)
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS vydaje (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            vydaj INT(10),
+            mena VARCHAR(3),
+            datum DATE,
+            cas TIME,
+            popis VARCHAR(45)
+        );
+        """)
+    conn.commit()
+    conn.close()
+    
+def pridej_prijem_do_db(prijem, mena, datum, cas, popis):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        INSERT INTO prijmy (prijem, mena, datum, cas, popis)
+        VALUES (%s, %s, %s, %s, %s)
+        """, (prijem, mena, datum, cas, popis)
+    )
+    conn.commit()
+    conn.close()
+    
+def pridej_vydaj_do_db(vydaj, mena, datum, cas, popis):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        INSERT INTO vydaje (vydaj, mena, datum, cas, popis)
+        VALUES (%s, %s, %s, %s, %s)
+        """, (vydaj, mena, datum, cas, popis)
+    )
     conn.commit()
     conn.close()
     

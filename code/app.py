@@ -1,14 +1,16 @@
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 import app_logic
 import database
 import schedule
 import threading
+import multipart
 
 database.vytvor_tabulky()
 app_logic.get_rates()
-schedule.every().hour.do(app_logic.job)
+schedule.every().day.at("15:00").do(app_logic.job)
 scheduler_thread = threading.Thread(target=app_logic.run_scheduler)
 scheduler_thread.start()
 
@@ -19,13 +21,36 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 async def main_page(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-@app.route("/prijmy")
+@app.get("/prijmy")
 async def prijmy(request: Request):
     return templates.TemplateResponse("prijmy.html", {"request": request})
 
-@app.route("/vydaje")
+@app.post("/prijmy", response_class=HTMLResponse)
+async def zadej_prijem(request: Request):
+    form_data = await request.form()
+    prijem = form_data.get("prijem_input")
+    mena = form_data.get("mena")
+    datum = form_data.get("datum_input")
+    cas = form_data.get("cas_input")
+    popis = form_data.get("prijem_popis")
+    database.pridej_prijem_do_db(prijem, mena, datum, cas, popis)
+    return RedirectResponse(url="/prijmy", status_code=303)
+
+
+@app.get("/vydaje")
 async def vydaje(request: Request):
     return templates.TemplateResponse("vydaje.html", {"request": request})
+
+@app.post("/vydaje", response_class=HTMLResponse)
+async def zadej_prijem(request: Request):
+    form_data = await request.form()
+    vydaj = form_data.get("vydaj_input")
+    mena = form_data.get("mena")
+    datum = form_data.get("datum_input")
+    cas = form_data.get("cas_input")
+    popis = form_data.get("vydaj_popis")
+    database.pridej_vydaj_do_db(vydaj, mena, datum, cas, popis)
+    return RedirectResponse(url="/vydaje", status_code=303)
 
 @app.route("/kurzy")
 async def kurzy(request: Request):

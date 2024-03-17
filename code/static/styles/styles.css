@@ -10,9 +10,9 @@ h1{
 }
 
 table {
-    width: 50%;
+    width: 25%;
     border-collapse: collapse;
-    margin-left: 25%;
+    margin-left: 10%;
 }
 
 /* Styling for table header (záhlaví) */
@@ -52,4 +52,33 @@ header a{
     margin: 5%;
     text-decoration: none;
     text-shadow: 5px 3px 10px;
+}
+
+.input_form {
+    width: 25%; /* Šířka formuláře */
+    margin-left: 10%; /* Zarovnání na střed stránky */
+}
+
+.input_form label {
+    display: block; /* Každý popisek na novém řádku */
+    margin-bottom: 5px; /* Mezera pod popiskem */
+}
+
+.input_form input,
+.input_form select {
+    width: calc(100% - 120px); /* Šířka vstupních polí */
+    padding: 8px; /* Odsazení vnitřního okraje */
+    margin-bottom: 10px; /* Mezera pod vstupními poli */
+}
+
+.input_form input[type="submit"] {
+    background-color: #4CAF50; /* Barva pozadí tlačítka */
+    color: white; /* Barva textu na tlačítku */
+    padding: 10px 20px; /* Odsazení vnitřního okraje */
+    border: none; /* Odstranění rámečku */
+    cursor: pointer; /* Ukázání ukazatele myši při najetí na tlačítko */
+}
+
+.input_form input[type="submit"]:hover {
+    background-color: #45a049; /* Barva pozadí tlačítka při najetí myši */
 }

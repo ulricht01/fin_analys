@@ -15,7 +15,27 @@
     <header>
         {% include "navigace.html" %}
     </header>
-
+    <div class="input_form" name="input_form" id="input_form">
+        <form method="post" action="/prijmy">
+            <label for="prijem_input"> Příjem:</label>
+            <input type="number" name="prijem_input" id="prijem_input" placeholder="123456" required maxlength="10">
+            <label for="mena">Měna:</label>
+            <select name="mena" id="mena" required>
+                <option value="CZK">CZK</option>
+                <option value="EUR">EUR</option>
+            </select>
+            <br>
+            <label for="datum_input">Datum:</label>
+            <input type="date" name="datum_input" id="datum_input" required>
+            <label for="cas_input">Čas:</label>
+            <input type="time" name="cas_input" id="cas_input" required>
+            <br>
+            <label for="prijem_popis"> Popis:</label>
+            <input type="text" name="prijem_popis" id="prijem_popis" placeholder="výplata" required maxlength="45">
+            <br>
+            <input type="submit" name="prijmy_submit" id="prijmy_submit" value="Potvrdit">
+        </form>
+    </div>
 
     <footer>
         {% include "paticka.html" %}
