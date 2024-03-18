@@ -47,6 +47,12 @@ header{
     text-align: center;
 }
 
+header img{
+    max-width: 150px; /* Maximální šířka obrázku */
+    max-height: 60px; /* Maximální výška obrázku */
+    
+}
+
 header ul {
     list-style-type: none; /* Odstraní body v seznamu */
     margin-right: 0;

@@ -17,6 +17,16 @@ def vytvor_tabulky():
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
+        CREATE TABLE IF NOT EXISTS uzivatele (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            email VARCHAR(70),
+            uzivatel VARCHAR(25),
+            heslo VARCHAR(70),
+            dt_create TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        """)
+    cursor.execute(
+        """
         CREATE TABLE IF NOT EXISTS meny (
             id INT AUTO_INCREMENT PRIMARY KEY,
             mena VARCHAR(3),
@@ -32,7 +42,12 @@ def vytvor_tabulky():
             mena VARCHAR(3),
             datum DATE,
             cas TIME,
-            popis VARCHAR(45)
+            popis VARCHAR(45),
+            id_uzivatel INT NOT NULL,
+            CONSTRAINT `fk_prijmy_uzivatele`
+                FOREIGN KEY (id_uzivatel) REFERENCES uzivatele (id)
+                ON DELETE CASCADE
+                ON UPDATE RESTRICT
         );
         """)
     cursor.execute(
@@ -43,17 +58,12 @@ def vytvor_tabulky():
             mena VARCHAR(3),
             datum DATE,
             cas TIME,
-            popis VARCHAR(45)
-        );
-        """)
-    cursor.execute(
-        """
-        CREATE TABLE IF NOT EXISTS uzivatele (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            email VARCHAR(70),
-            uzivatel VARCHAR(25),
-            heslo VARCHAR(70),
-            dt_create TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            popis VARCHAR(45),
+            id_uzivatel INT NOT NULL,
+            CONSTRAINT `fk_vydaje_uzivatele`
+                FOREIGN KEY (id_uzivatel) REFERENCES uzivatele (id)
+                ON DELETE CASCADE
+                ON UPDATE RESTRICT
         );
         """)
     conn.commit()
@@ -71,24 +81,24 @@ def pridej_uzivatele_do_db(mail, uzivatel, heslo):
     conn.close()
     
     
-def pridej_prijem_do_db(prijem, mena, datum, cas, popis):
+def pridej_prijem_do_db(prijem, mena, datum, cas, popis, id_uzivatel):
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
-        INSERT INTO prijmy (prijem, mena, datum, cas, popis)
-        VALUES (%s, %s, %s, %s, %s)
-        """, (prijem, mena, datum, cas, popis)
+        INSERT INTO prijmy (prijem, mena, datum, cas, popis, id_uzivatel)
+        VALUES (%s, %s, %s, %s, %s, %s)
+        """, (prijem, mena, datum, cas, popis, id_uzivatel)
     )
     conn.commit()
     conn.close()
     
-def pridej_vydaj_do_db(vydaj, mena, datum, cas, popis):
+def pridej_vydaj_do_db(vydaj, mena, datum, cas, popis, id_uzivatel):
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
-        INSERT INTO vydaje (vydaj, mena, datum, cas, popis)
-        VALUES (%s, %s, %s, %s, %s)
-        """, (vydaj, mena, datum, cas, popis)
+        INSERT INTO vydaje (vydaj, mena, datum, cas, popis, id_uzivatel)
+        VALUES (%s, %s, %s, %s, %s, %s)
+        """, (vydaj, mena, datum, cas, popis, id_uzivatel)
     )
     conn.commit()
     conn.close()

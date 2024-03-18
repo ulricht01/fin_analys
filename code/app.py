@@ -17,6 +17,7 @@ scheduler_thread.start()
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/obrazky", StaticFiles(directory="templates/obrazky"), name="obrazky")
 @app.route("/")
 async def main_page(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
@@ -33,7 +34,8 @@ async def zadej_prijem(request: Request):
     datum = form_data.get("datum_input")
     cas = form_data.get("cas_input")
     popis = form_data.get("prijem_popis")
-    database.pridej_prijem_do_db(prijem, mena, datum, cas, popis)
+    id_uzivatele = 1 #testovací dokud nebude funkční login
+    database.pridej_prijem_do_db(prijem, mena, datum, cas, popis, id_uzivatele)
     return RedirectResponse(url="/prijmy", status_code=303)
 
 @app.get("/registrace")
@@ -80,7 +82,8 @@ async def zadej_vydaje(request: Request):
     datum = form_data.get("datum_input")
     cas = form_data.get("cas_input")
     popis = form_data.get("vydaj_popis")
-    database.pridej_vydaj_do_db(vydaj, mena, datum, cas, popis)
+    id_uzivatele = 1 #testovací dokud nebude funkční login
+    database.pridej_vydaj_do_db(vydaj, mena, datum, cas, popis, id_uzivatele)
     return RedirectResponse(url="/vydaje", status_code=303)
 
 @app.route("/kurzy")
