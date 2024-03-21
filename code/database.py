@@ -192,3 +192,19 @@ def mail_check(mail):
         return None
     else:
         return mail[0]
+    
+def get_user(username):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT uzivatel FROM uzivatele
+        WHERE uzivatel = %s
+        """, (username,))
+    user = cursor.fetchone()
+    conn.commit()
+    conn.close()
+    if user == None:
+        return None
+    else:
+        return user
+    

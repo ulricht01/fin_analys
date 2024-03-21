@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -6,15 +6,34 @@ import app_logic
 import database
 import schedule
 import threading
-import multipart
+from fastapi_login import LoginManager
+from fastapi.security import OAuth2PasswordBearer
+
+SECRET = "super-secure-secret"
+manager = LoginManager(SECRET, token_url="/prihlaseni")
+
+
 
 database.vytvor_tabulky()
 app_logic.get_rates()
 schedule.every().day.at("15:00").do(app_logic.job)
 scheduler_thread = threading.Thread(target=app_logic.run_scheduler)
 scheduler_thread.start()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/prihlaseni")
+
+async def generate_access_token(data: dict):
+    # Implement token generation logic (e.g., using JWT)
+    # This is a placeholder, replace with your token generation method
+    access_token = f"fake-access-token-{data['sub']}"
+    return access_token
+
+@manager.user_loader
+def load_user(username: str):
+    user = database.get_user(username)
+    return user
 
 app = FastAPI()
+
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/obrazky", StaticFiles(directory="templates/obrazky"), name="obrazky")
@@ -65,10 +84,10 @@ async def zadej_prihlaseni(request: Request):
     uzivatel = form_data.get("uzivatel_input")
     heslo = form_data.get("heslo")
     if uzivatel == database.uzivatel_check(uzivatel) and heslo == database.heslo_check(uzivatel):
-            return RedirectResponse(url="/souhrn", status_code=303)
+        access_token = await generate_access_token(data={"sub": uzivatel})
+        return RedirectResponse(url="/souhrn", status_code=303)
     else:        
         return RedirectResponse(url="/prihlaseni", status_code=303)
-
 
 @app.get("/vydaje")
 async def vydaje(request: Request):
