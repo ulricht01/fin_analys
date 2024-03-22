@@ -165,6 +165,19 @@ def get_eur():
     conn.close()
     return eur[0]
 
+def get_gbp():
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT czk FROM meny
+        WHERE mena = "GBP" and dt_create = %s
+        """, (date.today(),)
+    )
+    gbp = cursor.fetchone()
+    conn.commit()
+    conn.close()
+    return gbp[0]
+
 def heslo_check(uzivatel):
     conn, cursor = navaz_spojeni()
     cursor.execute(

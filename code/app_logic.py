@@ -20,9 +20,12 @@ def get_rates():
                 usd = float(columns[4].text.replace(",", "."))
             elif "EUR" in column.text:
                 eur = float(columns[4].text.replace(",", "."))
+            elif "GBP" in column.text:
+                gbp = float(columns[4].text.replace(",", "."))
                 
     database.pridej_kurz_do_db("EUR", eur)
     database.pridej_kurz_do_db("USD", usd)
+    database.pridej_kurz_do_db("GBP", gbp)
 
     
 def job():

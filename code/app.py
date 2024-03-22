@@ -21,6 +21,16 @@ templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/obrazky", StaticFiles(directory="templates/obrazky"), name="obrazky")
 
+
+@app.get("/data")
+async def get_data():
+    # Example data (you can replace it with your own data)
+    labels = ["A", "B", "C", "D", "E"]
+    values = [10, 20, 30, 40, 50]
+    return {"labels": labels, "values": values}
+
+
+
 @app.get("/")
 async def main_page(request: Request, session_id: str = Cookie(None)):
     if session_id and app_logic.verify_session(session_id):  # Check for valid session
@@ -29,9 +39,9 @@ async def main_page(request: Request, session_id: str = Cookie(None)):
         return RedirectResponse(url="/prihlaseni", status_code=303)
     
 @app.get("/prijmy")
-async def prijmy(request: Request, session_id: str = Cookie(None)):
+async def prijmy(request: Request, success_mess: str ="", session_id: str = Cookie(None)):
     if session_id and app_logic.verify_session(session_id):  # Check for valid session
-        return templates.TemplateResponse("prijmy.html", {"request": request, "session_id": session_id})
+        return templates.TemplateResponse("prijmy.html", {"request": request, "session_id": session_id, "success_mess": success_mess})
     else:
         return RedirectResponse(url="/prihlaseni", status_code=303)
    
@@ -45,11 +55,16 @@ async def zadej_prijem(request: Request, session_id: str = Cookie(None)):
     popis = form_data.get("prijem_popis")
     id_uzivatele = database.get_user_id_via_session(request.cookies.get('session_id'))
     database.pridej_prijem_do_db(prijem, mena, datum, cas, popis, id_uzivatele)
-    return RedirectResponse(url="/prijmy", status_code=303)
+    success_mess = "Úspěšně přidáno do příjmů!"
+    return RedirectResponse(url=f"/prijmy?success_mess={success_mess}", status_code=303)
 
 @app.get("/registrace")
 async def registrace(request: Request, error_mess: str = "", session_id: str = Cookie(None)):
-    return templates.TemplateResponse("registrace.html", {"request": request, "session_id": session_id, "error_mess": error_mess})
+    if session_id and app_logic.verify_session(session_id):  # Check for valid session
+        return RedirectResponse(url="/souhrn", status_code=303)
+    else:
+        return templates.TemplateResponse("registrace.html", {"request": request, "session_id": session_id, "error_mess": error_mess})
+
 
 @app.post("/registrace", response_class=HTMLResponse)
 async def zadej_registraci(request: Request, session_id: str = Cookie(None)):
@@ -71,7 +86,10 @@ async def zadej_registraci(request: Request, session_id: str = Cookie(None)):
 
 @app.get("/prihlaseni")
 async def prihlaseni(request: Request, error_mess: str = "", success_mess: str = "", session_id: str = Cookie(None)):
-    return templates.TemplateResponse("prihlaseni.html", {"request": request, "session_id": session_id, "error_mess": error_mess, "success_mess": success_mess})
+    if session_id and app_logic.verify_session(session_id):  # Check for valid session
+        return RedirectResponse(url="/souhrn", status_code=303)
+    else:
+        return templates.TemplateResponse("prihlaseni.html", {"request": request, "session_id": session_id, "error_mess": error_mess, "success_mess": success_mess})
 
 @app.post("/prihlaseni", response_class=HTMLResponse)
 async def zadej_prihlaseni(request: Request, session_id: str = Cookie(None)):
@@ -91,9 +109,9 @@ async def zadej_prihlaseni(request: Request, session_id: str = Cookie(None)):
         return RedirectResponse(url=f"/prihlaseni?error_mess={error_mess}", status_code=303)
 
 @app.get("/vydaje")
-async def vydaje(request: Request, session_id: str = Cookie(None)):
+async def vydaje(request: Request, success_mess: str ="", session_id: str = Cookie(None)):
     if session_id and app_logic.verify_session(session_id):
-        return templates.TemplateResponse("vydaje.html", {"request": request, "session_id": session_id})
+        return templates.TemplateResponse("vydaje.html", {"request": request, "session_id": session_id, "success_mess": success_mess})
     else:
         return RedirectResponse(url="/prihlaseni", status_code=303)
     
@@ -107,7 +125,8 @@ async def zadej_vydaje(request: Request, session_id: str = Cookie(None)):
     popis = form_data.get("vydaj_popis")
     id_uzivatele = database.get_user_id_via_session(request.cookies.get('session_id'))
     database.pridej_vydaj_do_db(vydaj, mena, datum, cas, popis, id_uzivatele)
-    return RedirectResponse(url="/vydaje", status_code=303)
+    success_mess = "Úspěšně přidáno do výdajů!"
+    return RedirectResponse(url=f"/vydaje?success_mess={success_mess}", status_code=303)
 
 @app.get("/kurzy")
 async def kurzy(request: Request, session_id: str = Cookie(None)):
@@ -120,9 +139,14 @@ async def kurzy(request: Request, session_id: str = Cookie(None)):
             rate_eur = database.get_eur()
         except Exception as e:
             rate_eur = None
-        return templates.TemplateResponse("kurzy.html", {"request": request, "usd_rate": rate_usd, "eur_rate": rate_eur, "session_id": session_id})
+        try:
+            rate_gbp = database.get_gbp()
+        except Exception as e:
+            rate_gbp  = None
+        return templates.TemplateResponse("kurzy.html", {"request": request, "usd_rate": rate_usd, "eur_rate": rate_eur, "gbp_rate": rate_gbp, "session_id": session_id})
     else:
         return RedirectResponse(url="/prihlaseni", status_code=303)
+
 @app.get("/souhrn")
 async def souhrn(request: Request, session_id: str = Cookie(None)):
     if session_id and app_logic.verify_session(session_id):

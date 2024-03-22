@@ -135,3 +135,10 @@ header a {
     background-color: #45a049; /* Barva pozadí tlačítka při najetí myši */
 }
 
+.container {
+    width: 80%; /* Šířka kontejneru */
+    margin: 20px auto; /* Zarovnání na střed stránky */
+    border: 1px solid #ccc; /* Rámeček kolem kontejneru */
+    padding: 20px; /* Odsazení uvnitř kontejneru */
+    background-color: #f0f0f0; /* Barva pozadí kontejneru */
+}
