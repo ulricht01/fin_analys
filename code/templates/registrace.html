@@ -17,6 +17,12 @@
     </header>
     <div class="sign_form" name="sign_form" id="sign_form">
         <form method="post" action="/registrace">
+            {% if error_mess %}
+            <p style="color: red;">{{ error_mess }}</p>
+            {% endif %}
+            {% if success_mess %}
+            <p style="color: green;">{{ success_mess }}</p>
+            {% endif %}
             <label for="mail"> Email:</label>
             <input type="email" name="mail" id="mail" placeholder="uzivatel@example.cz" required maxlength="70">
             <label for="uzivatel_input"> Uživatelské jméno:</label>

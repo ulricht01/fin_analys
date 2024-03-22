@@ -17,6 +17,12 @@
     </header>
     <div class="sign_form" name="sign_form" id="sign_form">
         <form method="post" action="/prihlaseni">
+            {% if error_mess %}
+            <p style="color: red;">{{ error_mess }}</p>
+            {% endif %}
+            {% if success_mess %}
+            <p style="color: green;">{{ success_mess }}</p>
+            {% endif %}
             <label for="uzivatel_input"> Uživatelské jméno:</label>
             <input type="text" name="uzivatel_input" id="uzivatel_input" placeholder="uzivatel" required maxlength="25">
             <label for="heslo">Heslo:</label>

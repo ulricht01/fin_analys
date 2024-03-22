@@ -4,6 +4,7 @@ import database
 import time
 import schedule
 import uuid
+import re
 
 
 def get_rates():
@@ -41,3 +42,23 @@ def verify_session(session_id):
     else:
         return True   
     
+def check_password_reg(heslo, uzivatel, mail, heslo_znovu):
+    if len(heslo) < 8:
+        return False, "Heslo je přílíš krátké!"
+    
+    if not re.search("[A-Z]", heslo):
+        return False, "Heslo musí obsahovat alespoň jedno velké písmeno!"
+    
+    if not re.search("[0-9]", heslo):
+        return False, "Heslo musí obsahovat alepsoň jedno číslo!"
+    
+    if not database.uzivatel_check(uzivatel) == None:
+        return False, "Uživatel již existuje!"
+    
+    if not database.mail_check(mail) == None:
+        return False, "Email již existuje!"
+    
+    if not heslo == heslo_znovu:
+        return False, "Hesla se neshodují!"
+    
+    return True, "Úspěšná registrace!"

@@ -287,3 +287,16 @@ def get_session_id(id_uzivatel):
     else:
         return session_id[0]
     
+def get_user_id_via_session(session_id):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT id_uzivatel from sessions
+        WHERE id = %s
+        """, (session_id,)
+    )
+    uzivatel_id = cursor.fetchone()
+    conn.commit()
+    conn.close()
+    return uzivatel_id[0]
+    

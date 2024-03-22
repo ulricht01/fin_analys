@@ -7,9 +7,10 @@
 
 <body>
     <ul>
+        {% if not session_id %}
         <li><a href="registrace"><img src="obrazky/registrace.png" alt="Registrace" {% if request.path == '/registrace' %}class="active"{% endif %}></a></li>
         <li><a href="prihlaseni"><img src="obrazky/prihlaseni.png" alt="Prihlaseni" {% if request.path == '/prihlaseni' %}class="active"{% endif %}></a></li>
-        {% if session_id %}
+        {% elif session_id %}
         <li><a href="prijmy"><img src="obrazky/prijmy.png" alt="Příjmy" {% if request.path == '/prijmy' %}class="active"{% endif %}></a></li>
         <li><a href="vydaje"><img src="obrazky/vydaje.png" alt="Výdaje" {% if request.path == '/vydaje' %}class="active"{% endif %}></a></li>
         <li><a href="souhrn"><img src="obrazky/souhrn.png" alt="Souhrn" {% if request.path == '/souhrn' %}class="active"{% endif %}></a></li>
