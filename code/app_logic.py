@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 import database
 import time
 import schedule
+import uuid
+
 
 def get_rates():
     url = "https://www.cnb.cz/cs/financni-trhy/devizovy-trh/kurzy-devizoveho-trhu/kurzy-devizoveho-trhu/"
@@ -29,3 +31,13 @@ def run_scheduler():
     while True:
         schedule.run_pending()
         time.sleep(1)       
+        
+def generate_session_id(current_user_id):
+    database.pridej_session(str(uuid.uuid4()), current_user_id)
+
+def verify_session(session_id):
+    if database.select_session(session_id) == None:
+        return False
+    else:
+        return True   
+    

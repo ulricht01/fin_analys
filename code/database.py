@@ -1,5 +1,5 @@
 import mariadb
-from datetime import date
+from datetime import date, datetime
 
 def navaz_spojeni():
     config = {
@@ -61,6 +61,20 @@ def vytvor_tabulky():
             popis VARCHAR(45),
             id_uzivatel INT NOT NULL,
             CONSTRAINT `fk_vydaje_uzivatele`
+                FOREIGN KEY (id_uzivatel) REFERENCES uzivatele (id)
+                ON DELETE CASCADE
+                ON UPDATE RESTRICT
+        );
+        """)
+    
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS sessions (
+            id VARCHAR(255) PRIMARY KEY,
+            id_uzivatel INT NOT NULL,
+            vytvoreno TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            posledni_aktivita TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            CONSTRAINT `fk_sessions_uzivatele`
                 FOREIGN KEY (id_uzivatel) REFERENCES uzivatele (id)
                 ON DELETE CASCADE
                 ON UPDATE RESTRICT
@@ -193,11 +207,11 @@ def mail_check(mail):
     else:
         return mail[0]
     
-def get_user(username):
+def get_user_id(username):
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
-        SELECT uzivatel FROM uzivatele
+        SELECT id FROM uzivatele
         WHERE uzivatel = %s
         """, (username,))
     user = cursor.fetchone()
@@ -206,5 +220,70 @@ def get_user(username):
     if user == None:
         return None
     else:
-        return user
+        return user[0]
+    
+def pridej_session(id, id_uzivatel):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        INSERT INTO sessions (id, id_uzivatel)
+        VALUES (%s, %s)
+        """, (id, id_uzivatel)
+        )
+    conn.commit()
+    conn.close()
+
+
+def odeber_session(id_session):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        DELETE FROM sessions
+        WHERE id= %s
+        """, (id_session,)
+        )
+    conn.commit()
+    conn.close()
+
+def aktualizuj_session(id_session):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        UPDATE sessions
+        SET posledni_aktivita = %s
+        WHERE id = %s
+        """, (datetime.now(), id_session,)
+        )
+    conn.commit()
+    conn.close()
+
+def select_session(session_id):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT id FROM sessions
+        WHERE id = %s
+        """, (session_id,))
+    session_res = cursor.fetchone()
+    conn.commit()
+    conn.close()
+    if session_res == None:
+        return None
+    else:
+        return session_res[0]
+    
+def get_session_id(id_uzivatel):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT id FROM sessions
+        WHERE id_uzivatel = %s
+        """, (id_uzivatel,))
+    session_id = cursor.fetchone()
+    conn.commit()
+    conn.close()
+    if session_id == None:
+        return None
+    else:
+        return session_id[0]
     
