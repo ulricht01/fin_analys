@@ -142,3 +142,9 @@ header a {
     padding: 20px; /* Odsazení uvnitř kontejneru */
     background-color: #f0f0f0; /* Barva pozadí kontejneru */
 }
+
+#chart {
+    width: 500px;
+    height: 500px;
+    margin-left: 25%;
+}

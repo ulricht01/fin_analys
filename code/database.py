@@ -313,3 +313,23 @@ def get_user_id_via_session(session_id):
     conn.close()
     return uzivatel_id[0]
     
+
+def ziskej_data_pro_graf(id_uzivatel):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT popis, sum(prijem) as prijem FROM prijmy
+        WHERE id_uzivatel = %s
+        GROUP BY 1
+        """, (id_uzivatel,)
+    )
+    data = cursor.fetchall()
+    conn.close()
+
+    labels = []
+    values = []
+    for row in data:
+        labels.append(row[0])
+        values.append(row[1])
+
+    return {"labels": labels, "data": values}

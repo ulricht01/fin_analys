@@ -21,16 +21,6 @@ templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/obrazky", StaticFiles(directory="templates/obrazky"), name="obrazky")
 
-
-@app.get("/data")
-async def get_data():
-    # Example data (you can replace it with your own data)
-    labels = ["A", "B", "C", "D", "E"]
-    values = [10, 20, 30, 40, 50]
-    return {"labels": labels, "values": values}
-
-
-
 @app.get("/")
 async def main_page(request: Request, session_id: str = Cookie(None)):
     if session_id and app_logic.verify_session(session_id):  # Check for valid session
@@ -160,3 +150,13 @@ async def odhlasit(request: Request, session_id: str = Cookie(None, description=
     response = RedirectResponse(url="/prihlaseni", status_code=303)
     response.delete_cookie("session_id")
     return response
+
+
+@app.get("/grafy")
+async def souhrn(request: Request, session_id: str = Cookie(None)):
+    return templates.TemplateResponse("grafiky.html", {"request": request, "session_id": session_id})
+
+@app.get("/data")
+async def nacti_data():
+    data= database.ziskej_data_pro_graf(4)
+    return data
