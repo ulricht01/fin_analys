@@ -314,7 +314,7 @@ def get_user_id_via_session(session_id):
     return uzivatel_id[0]
     
 
-def ziskej_data_pro_graf(id_uzivatel):
+def prijmy_pie_data(id_uzivatel):
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
@@ -373,3 +373,121 @@ def prijmy_month_bar_data(id_uzivatel):
         values.append(row[1])
 
     return {"labels": labels, "data": values}
+
+def vydaje_pie_data(id_uzivatel):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT popis, sum(vydaj) as vydaj FROM vydaje
+        WHERE id_uzivatel = %s
+        GROUP BY 1
+        """, (id_uzivatel,)
+    )
+    data = cursor.fetchall()
+    conn.close()
+
+    labels = []
+    values = []
+    for row in data:
+        labels.append(row[0])
+        values.append(row[1])
+
+    return {"labels": labels, "data": values}
+
+def vydaje_bar_data(id_uzivatel):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT datum, sum(vydaj) as vydaj FROM vydaje
+        WHERE id_uzivatel = %s
+        GROUP BY 1
+        """, (id_uzivatel,)
+    )
+    data = cursor.fetchall()
+    conn.close()
+
+    labels = []
+    values = []
+    for row in data:
+        labels.append(row[0])
+        values.append(row[1])
+
+    return {"labels": labels, "data": values}
+
+def vydaje_month_bar_data(id_uzivatel):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT concat(year(datum), "/", month(datum)), sum(vydaj) as vydaj FROM vydaje
+        WHERE id_uzivatel = %s
+        GROUP BY 1
+        """, (id_uzivatel,)
+    )
+    data = cursor.fetchall()
+    conn.close()
+
+    labels = []
+    values = []
+    for row in data:
+        labels.append(row[0])
+        values.append(row[1])
+
+    return {"labels": labels, "data": values}
+
+def nacti_eur_kurzy_line():
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT dt_create, czk FROM meny
+        WHERE mena = 'EUR'
+        """
+    )
+    data = cursor.fetchall()
+    conn.close()
+
+    datumy = []
+    koruny = []
+    for row in data:
+        datumy.append(row[0])
+        koruny.append(row[1])
+
+    return {"datumy": datumy, "koruny": koruny}
+
+def nacti_usd_kurzy_line():
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT dt_create, czk FROM meny
+        WHERE mena = 'USD'
+        """
+    )
+    data = cursor.fetchall()
+    conn.close()
+
+    datumy = []
+    koruny = []
+    for row in data:
+        datumy.append(row[0])
+        koruny.append(row[1])
+
+    return {"datumy": datumy, "koruny": koruny}
+
+def nacti_gbp_kurzy_line():
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT dt_create, czk FROM meny
+        WHERE mena = 'GBP'
+        """
+    )
+    data = cursor.fetchall()
+    conn.close()
+
+    datumy = []
+    koruny = []
+    for row in data:
+        datumy.append(row[0])
+        koruny.append(row[1])
+
+    return {"datumy": datumy, "koruny": koruny}
+

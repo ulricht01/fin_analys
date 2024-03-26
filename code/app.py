@@ -157,8 +157,8 @@ async def souhrn(request: Request, session_id: str = Cookie(None)):
     return templates.TemplateResponse("grafiky.html", {"request": request, "session_id": session_id})
 
 @app.get("/prijmy_pie")
-async def nacti_data():
-    data= database.ziskej_data_pro_graf(4)
+async def nacti_prijmy_pie():
+    data= database.prijmy_pie_data(4)
     return data
 
 @app.get("/prijmy_bar")
@@ -169,4 +169,34 @@ async def nacti_bar_prijmy():
 @app.get("/prijmy_month_bar")
 async def nacti_month_bar_prijmy():
     data = database.prijmy_month_bar_data(4)
+    return data
+
+@app.get("/vydaje_pie")
+async def nacti_prijmy_pie():
+    data= database.vydaje_pie_data(4)
+    return data
+
+@app.get("/vydaje_bar")
+async def nacti_bar_prijmy():
+    data = database.vydaje_bar_data(4)
+    return data
+
+@app.get("/vydaje_month_bar")
+async def nacti_month_bar_prijmy():
+    data = database.vydaje_month_bar_data(4)
+    return data
+
+@app.get("/data_line_eur")
+async def nacti_czk():
+    data = database.nacti_eur_kurzy_line()
+    return data
+
+@app.get("/data_line_usd")
+async def nacti_czk():
+    data = database.nacti_usd_kurzy_line()
+    return data
+
+@app.get("/data_line_gbp")
+async def nacti_czk():
+    data = database.nacti_gbp_kurzy_line()
     return data

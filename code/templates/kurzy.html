@@ -7,6 +7,7 @@
     <meta name="author" content="Tomáš Ulrich">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="static/styles/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title> Kurzy </title>
 </head>
 
@@ -34,6 +35,14 @@
                 <td>{{gbp_rate}}</td>
             </tr>
         </table>
+
+        <div name="chart" id="chart">
+            <canvas id="kurzy_eur_chart" name="kurzy_eur_chart"></canvas>
+            <canvas id="kurzy_usd_chart" name="kurzy_usd_chart"></canvas>
+            <canvas id="kurzy_gbp_chart" name="kurzy_gbp_chart"></canvas>
+        </div>
+    
+        <script src="static/js/kurzy.js"></script>
     <footer>
         {% include "paticka.html" %}
     </footer>

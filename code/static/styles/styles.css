@@ -39,7 +39,6 @@ footer {
     right: 0;
     color: aliceblue;
     text-align: center;
-    padding: 10px;
 }
 
 /* Zde zapisujeme css pro header */
@@ -146,8 +145,9 @@ header a {
 #chart {
     display: flex; /* Umožní řazení prvků vedle sebe */
     flex-wrap: wrap; /* Při nedostatku místa na řádku se prvky přesunou na další řádek */
-    height: 30%; /* Nebo jiná hodnota výšky, kterou chcete */
     justify-content: space-around; /* Zarovná prvky na řádku tak, aby byly rovnoměrně rozložené */
     align-items: center; /* Zarovná prvky ve směru kolmém na řádek na střed */
+    height: 30%; /* Nebo jiná hodnota výšky, kterou chcete */
+
 }
 

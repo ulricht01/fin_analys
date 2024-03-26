@@ -7,6 +7,7 @@
     <meta name="author" content="Tomáš Ulrich">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="static/styles/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title> Výdaje </title>
 </head>
 
@@ -40,6 +41,14 @@
             <input type="submit" name="vydaj_submit" id="vydaj_submit" value="Potvrdit">
         </form>
     </div>
+
+    <div name="chart" id="chart">
+        <canvas id="myChart" name="myChart"></canvas>
+        <canvas id="myChart2" name="myChart2"></canvas>
+        <canvas id="myChart3", name="myChart3"></canvas>
+    </div>
+
+    <script src="static/js/vydaje.js"></script>
 
     <footer>
         {% include "paticka.html" %}

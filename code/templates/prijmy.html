@@ -7,7 +7,7 @@
     <meta name="author" content="Tomáš Ulrich">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="static/styles/styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js" integrity="sha512-L0Shl7nXXzIlBSUUPpxrokqq4ojqgZFQczTYlGjzONGTDAcLremjwaWv5A+EDLnxhQzY5xUZPWLOLqYRkY0Cbw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title> Příjmy </title>
 </head>
 
@@ -41,6 +41,14 @@
             <input type="submit" name="prijmy_submit" id="prijmy_submit" value="Potvrdit">
         </form>
     </div>
+
+    <div name="chart" id="chart">
+        <canvas id="myChart" name="myChart"></canvas>
+        <canvas id="myChart2" name="myChart2"></canvas>
+        <canvas id="myChart3", name="myChart3"></canvas>
+    </div>
+
+    <script src="static/js/prijmy.js"></script>
 
     <footer>
         {% include "paticka.html" %}
