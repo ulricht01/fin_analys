@@ -144,7 +144,10 @@ header a {
 }
 
 #chart {
-    width: 500px;
-    height: 500px;
-    margin-left: 25%;
+    display: flex; /* Umožní řazení prvků vedle sebe */
+    flex-wrap: wrap; /* Při nedostatku místa na řádku se prvky přesunou na další řádek */
+    height: 30%; /* Nebo jiná hodnota výšky, kterou chcete */
+    justify-content: space-around; /* Zarovná prvky na řádku tak, aby byly rovnoměrně rozložené */
+    align-items: center; /* Zarovná prvky ve směru kolmém na řádek na střed */
 }
+

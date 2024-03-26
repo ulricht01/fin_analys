@@ -156,7 +156,17 @@ async def odhlasit(request: Request, session_id: str = Cookie(None, description=
 async def souhrn(request: Request, session_id: str = Cookie(None)):
     return templates.TemplateResponse("grafiky.html", {"request": request, "session_id": session_id})
 
-@app.get("/data")
+@app.get("/prijmy_pie")
 async def nacti_data():
     data= database.ziskej_data_pro_graf(4)
+    return data
+
+@app.get("/prijmy_bar")
+async def nacti_bar_prijmy():
+    data = database.prijmy_bar_data(4)
+    return data
+
+@app.get("/prijmy_month_bar")
+async def nacti_month_bar_prijmy():
+    data = database.prijmy_month_bar_data(4)
     return data
