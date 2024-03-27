@@ -11,6 +11,7 @@ def navaz_spojeni():
     }
     conn = mariadb.connect(**config)
     cursor = conn.cursor()
+    cursor.execute("SET time_zone = '+01:00'")
     return conn,cursor
 
 def vytvor_tabulky():
@@ -42,7 +43,7 @@ def vytvor_tabulky():
             mena VARCHAR(3),
             datum DATE,
             cas TIME,
-            popis VARCHAR(45),
+            kategorie ENUM("Výplata", "Alimenty", "Kapesné", "Dar", "Podnikání", "Ostatní"),
             id_uzivatel INT NOT NULL,
             CONSTRAINT `fk_prijmy_uzivatele`
                 FOREIGN KEY (id_uzivatel) REFERENCES uzivatele (id)
@@ -58,7 +59,7 @@ def vytvor_tabulky():
             mena VARCHAR(3),
             datum DATE,
             cas TIME,
-            popis VARCHAR(45),
+            kategorie ENUM("Nájem", "Elektřina", "Internet", "Mobilní tarif", "Pojištění", "Potraviny", "Ostatní"),
             id_uzivatel INT NOT NULL,
             CONSTRAINT `fk_vydaje_uzivatele`
                 FOREIGN KEY (id_uzivatel) REFERENCES uzivatele (id)
@@ -95,24 +96,24 @@ def pridej_uzivatele_do_db(mail, uzivatel, heslo):
     conn.close()
     
     
-def pridej_prijem_do_db(prijem, mena, datum, cas, popis, id_uzivatel):
+def pridej_prijem_do_db(prijem, mena, datum, cas, kategorie, id_uzivatel):
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
-        INSERT INTO prijmy (prijem, mena, datum, cas, popis, id_uzivatel)
+        INSERT INTO prijmy (prijem, mena, datum, cas, kategorie, id_uzivatel)
         VALUES (%s, %s, %s, %s, %s, %s)
-        """, (prijem, mena, datum, cas, popis, id_uzivatel)
+        """, (prijem, mena, datum, cas, kategorie, id_uzivatel)
     )
     conn.commit()
     conn.close()
     
-def pridej_vydaj_do_db(vydaj, mena, datum, cas, popis, id_uzivatel):
+def pridej_vydaj_do_db(vydaj, mena, datum, cas, kategorie, id_uzivatel):
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
-        INSERT INTO vydaje (vydaj, mena, datum, cas, popis, id_uzivatel)
+        INSERT INTO vydaje (vydaj, mena, datum, cas, kategorie, id_uzivatel)
         VALUES (%s, %s, %s, %s, %s, %s)
-        """, (vydaj, mena, datum, cas, popis, id_uzivatel)
+        """, (vydaj, mena, datum, cas, kategorie, id_uzivatel)
     )
     conn.commit()
     conn.close()
@@ -318,7 +319,7 @@ def prijmy_pie_data(id_uzivatel):
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
-        SELECT popis, sum(prijem) as prijem FROM prijmy
+        SELECT kategorie, sum(prijem) as prijem FROM prijmy
         WHERE id_uzivatel = %s
         GROUP BY 1
         """, (id_uzivatel,)
@@ -338,7 +339,7 @@ def prijmy_bar_data(id_uzivatel):
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
-        SELECT datum, sum(prijem) as prijem FROM prijmy
+        SELECT DATE_FORMAT(datum, '%d.%m.%Y') AS datum, sum(prijem) as prijem FROM prijmy
         WHERE id_uzivatel = %s
         GROUP BY 1
         """, (id_uzivatel,)
@@ -378,7 +379,7 @@ def vydaje_pie_data(id_uzivatel):
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
-        SELECT popis, sum(vydaj) as vydaj FROM vydaje
+        SELECT kategorie, sum(vydaj) as vydaj FROM vydaje
         WHERE id_uzivatel = %s
         GROUP BY 1
         """, (id_uzivatel,)
@@ -398,7 +399,7 @@ def vydaje_bar_data(id_uzivatel):
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
-        SELECT datum, sum(vydaj) as vydaj FROM vydaje
+        SELECT DATE_FORMAT(datum, '%d.%m.%Y') AS datum, sum(vydaj) as vydaj FROM vydaje
         WHERE id_uzivatel = %s
         GROUP BY 1
         """, (id_uzivatel,)
@@ -438,7 +439,7 @@ def nacti_eur_kurzy_line():
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
-        SELECT dt_create, czk FROM meny
+        SELECT DATE_FORMAT(dt_create, '%d.%m.%Y') AS datum, czk FROM meny
         WHERE mena = 'EUR'
         """
     )
@@ -457,7 +458,7 @@ def nacti_usd_kurzy_line():
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
-        SELECT dt_create, czk FROM meny
+        SELECT DATE_FORMAT(dt_create, '%d.%m.%Y') AS datum, czk FROM meny
         WHERE mena = 'USD'
         """
     )
@@ -476,7 +477,7 @@ def nacti_gbp_kurzy_line():
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
-        SELECT dt_create, czk FROM meny
+        SELECT DATE_FORMAT(dt_create, '%d.%m.%Y') AS datum, czk FROM meny
         WHERE mena = 'GBP'
         """
     )
@@ -491,3 +492,45 @@ def nacti_gbp_kurzy_line():
 
     return {"datumy": datumy, "koruny": koruny}
 
+def kategorie_prijmy():
+    conn, cursor = navaz_spojeni()
+    cursor.execute("DESCRIBE prijmy")
+    results = cursor.fetchall()
+    conn.commit()
+    conn.close()
+    for row in results:
+        if row[0] == 'kategorie':
+            enum_values_str = row[1]
+            enum_values = enum_values_str[enum_values_str.find("(")+1:enum_values_str.find(")")]
+            enum_values = enum_values.replace("'", "")
+            enum_values = enum_values.split(",")
+            return enum_values
+    return "No results found."
+
+def kategorie_vydaje():
+    conn, cursor = navaz_spojeni()
+    cursor.execute("DESCRIBE vydaje")
+    results = cursor.fetchall()
+    conn.commit()
+    conn.close()
+    for row in results:
+        if row[0] == 'kategorie':
+            enum_values_str = row[1]
+            enum_values = enum_values_str[enum_values_str.find("(")+1:enum_values_str.find(")")]
+            enum_values = enum_values.replace("'", "")
+            enum_values = enum_values.split(",")
+            return enum_values
+    return "No results found."
+
+def get_all_sessions():
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT * from sessions
+        """
+    )
+    columns = [column[0] for column in cursor.description]  # Získání názvů sloupců
+    sessions = [dict(zip(columns, row)) for row in cursor.fetchall()]  # Přeformátování výsledku do slovníku
+    conn.commit()
+    conn.close()
+    return sessions

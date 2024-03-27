@@ -12,6 +12,7 @@ import hashlib
 database.vytvor_tabulky()
 app_logic.get_rates()
 schedule.every().day.at("15:00").do(app_logic.job)
+schedule.every(5).minutes.do(app_logic.run_scheduler)
 scheduler_thread = threading.Thread(target=app_logic.run_scheduler)
 scheduler_thread.start()
 
@@ -31,7 +32,8 @@ async def main_page(request: Request, session_id: str = Cookie(None)):
 @app.get("/prijmy")
 async def prijmy(request: Request, success_mess: str ="", session_id: str = Cookie(None)):
     if session_id and app_logic.verify_session(session_id):  # Check for valid session
-        return templates.TemplateResponse("prijmy.html", {"request": request, "session_id": session_id, "success_mess": success_mess})
+        kategorie= database.kategorie_prijmy()
+        return templates.TemplateResponse("prijmy.html", {"request": request, "session_id": session_id, "success_mess": success_mess, "kategorie" : kategorie})
     else:
         return RedirectResponse(url="/prihlaseni", status_code=303)
    
@@ -42,9 +44,9 @@ async def zadej_prijem(request: Request, session_id: str = Cookie(None)):
     mena = form_data.get("mena")
     datum = form_data.get("datum_input")
     cas = form_data.get("cas_input")
-    popis = form_data.get("prijem_popis")
+    kategorie = form_data.get("kategorie")
     id_uzivatele = database.get_user_id_via_session(request.cookies.get('session_id'))
-    database.pridej_prijem_do_db(prijem, mena, datum, cas, popis, id_uzivatele)
+    database.pridej_prijem_do_db(prijem, mena, datum, cas, kategorie, id_uzivatele)
     success_mess = "Úspěšně přidáno do příjmů!"
     return RedirectResponse(url=f"/prijmy?success_mess={success_mess}", status_code=303)
 
@@ -99,9 +101,10 @@ async def zadej_prihlaseni(request: Request, session_id: str = Cookie(None)):
         return RedirectResponse(url=f"/prihlaseni?error_mess={error_mess}", status_code=303)
 
 @app.get("/vydaje")
-async def vydaje(request: Request, success_mess: str ="", session_id: str = Cookie(None)):
+async def vydaje(request: Request, success_mess: str ="",session_id: str = Cookie(None)):
     if session_id and app_logic.verify_session(session_id):
-        return templates.TemplateResponse("vydaje.html", {"request": request, "session_id": session_id, "success_mess": success_mess})
+        kategorie = database.kategorie_vydaje()
+        return templates.TemplateResponse("vydaje.html", {"request": request, "session_id": session_id, "success_mess": success_mess, "kategorie": kategorie})
     else:
         return RedirectResponse(url="/prihlaseni", status_code=303)
     
@@ -112,9 +115,9 @@ async def zadej_vydaje(request: Request, session_id: str = Cookie(None)):
     mena = form_data.get("mena")
     datum = form_data.get("datum_input")
     cas = form_data.get("cas_input")
-    popis = form_data.get("vydaj_popis")
+    kategorie = form_data.get("kategorie")
     id_uzivatele = database.get_user_id_via_session(request.cookies.get('session_id'))
-    database.pridej_vydaj_do_db(vydaj, mena, datum, cas, popis, id_uzivatele)
+    database.pridej_vydaj_do_db(vydaj, mena, datum, cas, kategorie, id_uzivatele)
     success_mess = "Úspěšně přidáno do výdajů!"
     return RedirectResponse(url=f"/vydaje?success_mess={success_mess}", status_code=303)
 
@@ -151,39 +154,34 @@ async def odhlasit(request: Request, session_id: str = Cookie(None, description=
     response.delete_cookie("session_id")
     return response
 
-
-@app.get("/grafy")
-async def souhrn(request: Request, session_id: str = Cookie(None)):
-    return templates.TemplateResponse("grafiky.html", {"request": request, "session_id": session_id})
-
 @app.get("/prijmy_pie")
-async def nacti_prijmy_pie():
-    data= database.prijmy_pie_data(4)
+async def nacti_prijmy_pie(session_id: str = Cookie(None)):
+    data= database.prijmy_pie_data(database.get_user_id_via_session(session_id))
     return data
 
 @app.get("/prijmy_bar")
-async def nacti_bar_prijmy():
-    data = database.prijmy_bar_data(4)
+async def nacti_bar_prijmy(session_id: str = Cookie(None)):
+    data = database.prijmy_bar_data(database.get_user_id_via_session(session_id))
     return data
 
 @app.get("/prijmy_month_bar")
-async def nacti_month_bar_prijmy():
-    data = database.prijmy_month_bar_data(4)
+async def nacti_month_bar_prijmy(session_id: str = Cookie(None)):
+    data = database.prijmy_month_bar_data(database.get_user_id_via_session(session_id))
     return data
 
 @app.get("/vydaje_pie")
-async def nacti_prijmy_pie():
-    data= database.vydaje_pie_data(4)
+async def nacti_prijmy_pie(session_id: str = Cookie(None)):
+    data= database.vydaje_pie_data(database.get_user_id_via_session(session_id))
     return data
 
 @app.get("/vydaje_bar")
-async def nacti_bar_prijmy():
-    data = database.vydaje_bar_data(4)
+async def nacti_bar_prijmy(session_id: str = Cookie(None)):
+    data = database.vydaje_bar_data(database.get_user_id_via_session(session_id))
     return data
 
 @app.get("/vydaje_month_bar")
-async def nacti_month_bar_prijmy():
-    data = database.vydaje_month_bar_data(4)
+async def nacti_month_bar_prijmy(session_id: str = Cookie(None)):
+    data = database.vydaje_month_bar_data(database.get_user_id_via_session(session_id))
     return data
 
 @app.get("/data_line_eur")

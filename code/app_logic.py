@@ -5,6 +5,7 @@ import time
 import schedule
 import uuid
 import re
+import datetime
 
 
 def get_rates():
@@ -29,12 +30,34 @@ def get_rates():
 
     
 def job():
-    get_rates()    
+    get_rates() 
     
 def run_scheduler():
     while True:
+        end_inactive_sessions()
         schedule.run_pending()
-        time.sleep(1)       
+        time.sleep(1)      
+        
+def end_inactive_sessions():
+    # Získání aktuálního času
+    current_time = datetime.datetime.now()
+
+    # Získání všech session z databáze
+    all_sessions = database.get_all_sessions()
+
+    # Pro každou session
+    for session in all_sessions:
+        # Vypočítat čas od poslední aktivity
+        time_since_last_activity = current_time - session['posledni_aktivita']
+
+        # Pokud čas od poslední aktivity je větší než 30 minut
+        if time_since_last_activity.total_seconds() > 1800:  # 1800 sekund = 30 minut
+            # Ukončit session
+            end_session(session['id'])
+
+# Funkce pro ukončení session
+def end_session(session_id):
+    database.odeber_session(session_id) 
         
 def generate_session_id(current_user_id):
     database.pridej_session(str(uuid.uuid4()), current_user_id)

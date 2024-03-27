@@ -35,8 +35,12 @@
             <label for="cas_input">Čas:</label>
             <input type="time" name="cas_input" id="cas_input" required>
             <br>
-            <label for="vydaj_popis"> Popis:</label>
-            <input type="text" name="vydaj_popis" id="vydaj_popis" placeholder="výplata" required maxlength="45">
+            <label for="kategorie"> Kategorie:</label>
+            <select id="kategorie" name="kategorie">
+                {% for value in kategorie %}
+                <option value="{{ value }}">{{ value }}</option>
+                {% endfor %}
+            </select>
             <br>
             <input type="submit" name="vydaj_submit" id="vydaj_submit" value="Potvrdit">
         </form>
@@ -50,9 +54,6 @@
 
     <script src="static/js/vydaje.js"></script>
 
-    <footer>
-        {% include "paticka.html" %}
-    </footer>
 </body>
 
 
