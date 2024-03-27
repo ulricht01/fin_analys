@@ -29,14 +29,10 @@ def get_rates():
     database.pridej_kurz_do_db("GBP", gbp)
 
     
-def job():
-    get_rates() 
-    
 def run_scheduler():
     while True:
-        end_inactive_sessions()
         schedule.run_pending()
-        time.sleep(300)      
+        time.sleep(5)      
         
 def end_inactive_sessions():
     # Získání aktuálního času
@@ -92,3 +88,38 @@ def check_password_reg(heslo, uzivatel, mail, heslo_znovu):
         return False, "Hesla se neshodují!"
     
     return True, "Úspěšná registrace!"
+
+def get_bitcoin_price():
+    try:
+        url = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=czk'
+        response = requests.get(url)
+        data = response.json()
+        bitcoin_price_czk = data['bitcoin']['czk']
+        database.pridej_krypto_do_db("BITC", bitcoin_price_czk)
+    except KeyError as e:
+        print("Chyba při získávání ceny Bitcoinu:", e)
+    except Exception as e:
+        print("Neočekávaná chyba při získávání ceny Bitcoinu:", e)
+
+def get_shiba_inu_price():
+    try:
+        url = 'https://api.coingecko.com/api/v3/simple/price?ids=shiba-inu&vs_currencies=czk'
+        response = requests.get(url)
+        data = response.json()
+        shiba_inu_price_czk = data.get('shiba-inu', {}).get('czk')
+        if shiba_inu_price_czk is not None:
+            database.pridej_krypto_do_db("SHIB", shiba_inu_price_czk)
+    except Exception as e:
+        print("Neočekávaná chyba při získávání ceny Shiba Inu:", e)
+
+def get_dogecoin_price():
+    try:
+        url = 'https://api.coingecko.com/api/v3/simple/price?ids=dogecoin&vs_currencies=czk'
+        response = requests.get(url)
+        data = response.json()
+        dogecoin_price_czk = data.get('dogecoin', {}).get('czk')
+        if dogecoin_price_czk is not None:
+            database.pridej_krypto_do_db("DOGE", dogecoin_price_czk)
+    except Exception as e:
+        print("Neočekávaná chyba při získávání ceny Dogecoinu:", e)
+

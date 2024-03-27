@@ -97,6 +97,17 @@ def vytvor_tabulky():
                 ON UPDATE RESTRICT
         );
         """)
+    
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS krypto (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            mena ENUM("SHIB", "BITC", "DOGE"),
+            czk DOUBLE NOT NULL,
+            dt_create DATE NOT NULL DEFAULT CURRENT_DATE,
+            time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
+        """)
     conn.commit()
     conn.close()
     
@@ -646,3 +657,78 @@ def zustatky_bar(id_uzivatel):
     vydej = [row[2] for row in data]
         
     return {"datumy": datumy, "prijem": prijem, "vydej": vydej}
+
+def pridej_krypto_do_db(mena, krypto):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        INSERT INTO krypto (mena, czk)
+        VALUES (%s, %s)
+        """, (mena,krypto,)
+    )
+    conn.commit()
+    conn.close()
+
+
+def nacti_bitc_line():
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT DATE_FORMAT(dt_create, '%d.%m.%Y') AS datum, avg(czk) as czk 
+        FROM krypto
+        WHERE mena = 'BITC'
+        GROUP BY 1
+        """
+    )
+    data = cursor.fetchall()
+    conn.close()
+
+    datumy = []
+    koruny = []
+    for row in data:
+        datumy.append(row[0])
+        koruny.append(row[1])
+
+    return {"datumy": datumy, "koruny": koruny}
+
+def nacti_shiba_line():
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT DATE_FORMAT(dt_create, '%d.%m.%Y') AS datum, avg(czk) as czk 
+        FROM krypto
+        WHERE mena = 'SHIB'
+        GROUP BY 1
+        """
+    )
+    data = cursor.fetchall()
+    conn.close()
+
+    datumy = []
+    koruny = []
+    for row in data:
+        datumy.append(row[0])
+        koruny.append(row[1])
+
+    return {"datumy": datumy, "koruny": koruny}
+
+def nacti_doge_line():
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT DATE_FORMAT(dt_create, '%d.%m.%Y') AS datum, avg(czk) as czk 
+        FROM krypto
+        WHERE mena = 'DOGE'
+        GROUP BY 1
+        """
+    )
+    data = cursor.fetchall()
+    conn.close()
+
+    datumy = []
+    koruny = []
+    for row in data:
+        datumy.append(row[0])
+        koruny.append(row[1])
+
+    return {"datumy": datumy, "koruny": koruny}

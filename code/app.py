@@ -11,8 +11,11 @@ import hashlib
 
 database.vytvor_tabulky()
 app_logic.get_rates()
-schedule.every().day.at("15:00").do(app_logic.job)
-schedule.every(5).minutes.do(app_logic.run_scheduler)
+schedule.every().day.at("15:00").do(app_logic.get_rates)
+schedule.every(5).minutes.do(app_logic.end_inactive_sessions)
+schedule.every(5).seconds.do(app_logic.get_shiba_inu_price)
+schedule.every(5).seconds.do(app_logic.get_bitcoin_price)
+schedule.every(5).seconds.do(app_logic.get_dogecoin_price)
 scheduler_thread = threading.Thread(target=app_logic.run_scheduler)
 scheduler_thread.start()
 
@@ -209,4 +212,19 @@ async def nacti_zustatky(session_id: str = Cookie(None)):
 @app.get("/zustatky_bar")
 async def nacti_zustatky_bar(session_id: str = Cookie(None)):
     data = database.zustatky_bar(database.get_user_id_via_session(session_id))
+    return data
+
+@app.get("/krypto_bitcoin_lines")
+async def nacti_bitcoin_lines():
+    data = database.nacti_bitc_line()
+    return data
+    
+@app.get("/krypto_shiba_lines")
+async def nacti_shiba_lines():
+    data = database.nacti_shiba_line()
+    return data
+    
+@app.get("/krypto_doge_lines")
+async def nacti_doge_lines():
+    data = database.nacti_doge_line()
     return data

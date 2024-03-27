@@ -114,3 +114,121 @@ fetch('/data_line_gbp').then(response => response.json()).then(data => {
 
     })
 })
+
+
+fetch('/krypto_bitcoin_lines').then(response => response.json()).then(data => {
+    const casy = data.datumy;
+    const hodnoty = data.koruny;
+
+    const ctx = document.getElementById('btc_line_chart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: casy,
+            datasets: [{
+                label: 'CZK',
+                data: hodnoty,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.5)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: false
+                },
+                title:{
+                    display: true,
+                    text: 'Průměrný vývoj BITCOIN',
+                    font: {
+                        size: 18
+                    }
+                }
+            }
+        }
+
+    })
+})
+
+fetch('/krypto_shiba_lines').then(response => response.json()).then(data => {
+    const casy = data.datumy;
+    const hodnoty = data.koruny;
+
+    const ctx = document.getElementById('shiba_line_chart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: casy,
+            datasets: [{
+                label: 'CZK',
+                data: hodnoty,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.5)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: false
+                },
+                title:{
+                    display: true,
+                    text: 'Průměrný vývoj SHIBA',
+                    font: {
+                        size: 18
+                    }
+                }
+            }
+        }
+
+    })
+})
+
+fetch('/krypto_doge_lines').then(response => response.json()).then(data => {
+    const casy = data.datumy;
+    const hodnoty = data.koruny;
+
+    const ctx = document.getElementById('doge_line_chart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: casy,
+            datasets: [{
+                label: 'CZK',
+                data: hodnoty,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.5)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: false
+                },
+                title:{
+                    display: true,
+                    text: 'Průměrný vývoj DOGE',
+                    font: {
+                        size: 18
+                    }
+                }
+            }
+        }
+
+    })
+})
