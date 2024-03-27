@@ -30,7 +30,7 @@ def vytvor_tabulky():
         """
         CREATE TABLE IF NOT EXISTS meny (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            mena VARCHAR(3),
+            mena ENUM("CZK", "USD", "EUR", "GBP"),
             czk DOUBLE NOT NULL,
             dt_create DATE NOT NULL DEFAULT CURRENT_DATE
         );
@@ -39,7 +39,8 @@ def vytvor_tabulky():
         """
         CREATE TABLE IF NOT EXISTS prijmy (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            prijem INT(10),
+            prijem DOUBLE,
+            prijem_CZK DOUBLE,
             mena VARCHAR(3),
             datum DATE,
             cas TIME,
@@ -55,7 +56,8 @@ def vytvor_tabulky():
         """
         CREATE TABLE IF NOT EXISTS vydaje (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            vydaj INT(10),
+            vydaj DOUBLE,
+            vydaj_CZK DOUBLE,
             mena VARCHAR(3),
             datum DATE,
             cas TIME,
@@ -81,6 +83,20 @@ def vytvor_tabulky():
                 ON UPDATE RESTRICT
         );
         """)
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS ucty (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            id_uzivatel INT NOT NULL,
+            dt_zapis DATE,
+            zustatek DOUBLE DEFAULT 0,
+            typ ENUM("Příjem", "Výdaj"),
+            CONSTRAINT `fk_ucty_uzivatele`
+                FOREIGN KEY (id_uzivatel) REFERENCES uzivatele (id)
+                ON DELETE CASCADE
+                ON UPDATE RESTRICT
+        );
+        """)
     conn.commit()
     conn.close()
     
@@ -97,23 +113,55 @@ def pridej_uzivatele_do_db(mail, uzivatel, heslo):
     
     
 def pridej_prijem_do_db(prijem, mena, datum, cas, kategorie, id_uzivatel):
+    kurzy = {
+        "USD": get_usd(),
+        "EUR": get_eur(),
+        "GBP": get_gbp(),
+        "CZK": 1  # Kurz pro CZK je vždy 1
+    }
+    kurz = kurzy.get(mena)
+
+    prijem_czk = float(prijem) * kurz
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
-        INSERT INTO prijmy (prijem, mena, datum, cas, kategorie, id_uzivatel)
-        VALUES (%s, %s, %s, %s, %s, %s)
-        """, (prijem, mena, datum, cas, kategorie, id_uzivatel)
+        INSERT INTO prijmy (prijem, prijem_czk, mena, datum, cas, kategorie, id_uzivatel)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (prijem, prijem_czk, mena, datum, cas, kategorie, id_uzivatel)
+    )
+    
+    cursor.execute(
+        """
+        INSERT INTO ucty (id_uzivatel, dt_zapis, zustatek, typ)
+        VALUES (%s, %s, %s, "Příjem")
+        """, (id_uzivatel, datum, prijem_czk)
     )
     conn.commit()
     conn.close()
     
 def pridej_vydaj_do_db(vydaj, mena, datum, cas, kategorie, id_uzivatel):
+    kurzy = {
+        "USD": get_usd(),
+        "EUR": get_eur(),
+        "GBP": get_gbp(),
+        "CZK": 1  # Kurz pro CZK je vždy 1
+    }
+    
+    kurz = kurzy.get(mena)
+    vydaj_czk = float(vydaj) * kurz
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
-        INSERT INTO vydaje (vydaj, mena, datum, cas, kategorie, id_uzivatel)
-        VALUES (%s, %s, %s, %s, %s, %s)
-        """, (vydaj, mena, datum, cas, kategorie, id_uzivatel)
+        INSERT INTO vydaje (vydaj, vydaj_czk, mena, datum, cas, kategorie, id_uzivatel)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (vydaj, vydaj_czk, mena, datum, cas, kategorie, id_uzivatel)
+    )
+    
+    cursor.execute(
+        """
+        INSERT INTO ucty (id_uzivatel, dt_zapis, zustatek, typ)
+        VALUES (%s, %s, %s, "Výdaj")
+        """, (id_uzivatel, datum, -vydaj_czk)
     )
     conn.commit()
     conn.close()
@@ -319,7 +367,7 @@ def prijmy_pie_data(id_uzivatel):
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
-        SELECT kategorie, sum(prijem) as prijem FROM prijmy
+        SELECT kategorie, sum(prijem_czk) as prijem FROM prijmy
         WHERE id_uzivatel = %s
         GROUP BY 1
         """, (id_uzivatel,)
@@ -339,7 +387,7 @@ def prijmy_bar_data(id_uzivatel):
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
-        SELECT DATE_FORMAT(datum, '%d.%m.%Y') AS datum, sum(prijem) as prijem FROM prijmy
+        SELECT DATE_FORMAT(datum, '%d.%m.%Y') AS datum, sum(prijem_czk) as prijem FROM prijmy
         WHERE id_uzivatel = %s
         GROUP BY 1
         """, (id_uzivatel,)
@@ -359,7 +407,7 @@ def prijmy_month_bar_data(id_uzivatel):
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
-        SELECT concat(year(datum), "/", month(datum)), sum(prijem) as prijem FROM prijmy
+        SELECT concat(year(datum), "/", month(datum)), sum(prijem_czk) as prijem FROM prijmy
         WHERE id_uzivatel = %s
         GROUP BY 1
         """, (id_uzivatel,)
@@ -379,7 +427,7 @@ def vydaje_pie_data(id_uzivatel):
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
-        SELECT kategorie, sum(vydaj) as vydaj FROM vydaje
+        SELECT kategorie, sum(vydaj_czk) as vydaj FROM vydaje
         WHERE id_uzivatel = %s
         GROUP BY 1
         """, (id_uzivatel,)
@@ -399,7 +447,7 @@ def vydaje_bar_data(id_uzivatel):
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
-        SELECT DATE_FORMAT(datum, '%d.%m.%Y') AS datum, sum(vydaj) as vydaj FROM vydaje
+        SELECT DATE_FORMAT(datum, '%d.%m.%Y') AS datum, sum(vydaj_czk) as vydaj FROM vydaje
         WHERE id_uzivatel = %s
         GROUP BY 1
         """, (id_uzivatel,)
@@ -419,7 +467,7 @@ def vydaje_month_bar_data(id_uzivatel):
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
-        SELECT concat(year(datum), "/", month(datum)), sum(vydaj) as vydaj FROM vydaje
+        SELECT concat(year(datum), "/", month(datum)), sum(vydaj_czk) as vydaj FROM vydaje
         WHERE id_uzivatel = %s
         GROUP BY 1
         """, (id_uzivatel,)
@@ -534,3 +582,67 @@ def get_all_sessions():
     conn.commit()
     conn.close()
     return sessions
+    
+def volby_meny():
+    conn, cursor = navaz_spojeni()
+    cursor.execute("DESCRIBE meny")
+    results = cursor.fetchall()
+    conn.commit()
+    conn.close()
+    for row in results:
+        if row[0] == 'mena':
+            enum_values_str = row[1]
+            enum_values = enum_values_str[enum_values_str.find("(")+1:enum_values_str.find(")")]
+            enum_values = enum_values.replace("'", "")
+            enum_values = enum_values.split(",")
+            return enum_values
+    return "No results found."
+
+def zustatky(id_uzivatel):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT DISTINCT
+            DATE_FORMAT(dt_zapis, '%d.%m.%Y') AS datum,
+            SUM(zustatek) OVER (ORDER BY dt_zapis) AS kumulativni_zustatek
+        FROM ucty
+        WHERE id_uzivatel = %s
+        ORDER BY dt_zapis
+        """,
+        (id_uzivatel,)
+    )
+    data = cursor.fetchall()
+    
+    conn.commit()
+    conn.close()
+    
+    datumy = [row[0] for row in data]
+    zustatky = [row[1] for row in data]
+        
+    return {"datumy": datumy, "zustatky": zustatky}
+
+def zustatky_bar(id_uzivatel):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT
+            DATE_FORMAT(dt_zapis, '%d.%m.%Y') AS datum,
+            SUM(CASE WHEN typ = 'Příjem' THEN zustatek ELSE 0 END) AS prijem,
+            SUM(CASE WHEN typ = 'Výdaj' THEN -zustatek ELSE 0 END) AS vydej
+        FROM ucty
+        WHERE id_uzivatel = %s
+        GROUP BY 1
+        ORDER BY dt_zapis
+        """,
+        (id_uzivatel,)
+    )
+    data = cursor.fetchall()
+    
+    conn.commit()
+    conn.close()
+    
+    datumy = [row[0] for row in data]
+    prijem = [row[1] for row in data]
+    vydej = [row[2] for row in data]
+        
+    return {"datumy": datumy, "prijem": prijem, "vydej": vydej}

@@ -36,7 +36,7 @@ def run_scheduler():
     while True:
         end_inactive_sessions()
         schedule.run_pending()
-        time.sleep(1)      
+        time.sleep(300)      
         
 def end_inactive_sessions():
     # Získání aktuálního času
@@ -44,6 +44,10 @@ def end_inactive_sessions():
 
     # Získání všech session z databáze
     all_sessions = database.get_all_sessions()
+
+    # Kontrola zda je seznam sessions prázdný
+    if not all_sessions:
+        return  None
 
     # Pro každou session
     for session in all_sessions:

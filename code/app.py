@@ -32,8 +32,9 @@ async def main_page(request: Request, session_id: str = Cookie(None)):
 @app.get("/prijmy")
 async def prijmy(request: Request, success_mess: str ="", session_id: str = Cookie(None)):
     if session_id and app_logic.verify_session(session_id):  # Check for valid session
-        kategorie= database.kategorie_prijmy()
-        return templates.TemplateResponse("prijmy.html", {"request": request, "session_id": session_id, "success_mess": success_mess, "kategorie" : kategorie})
+        kategorie = database.kategorie_prijmy()
+        meny = database.volby_meny()
+        return templates.TemplateResponse("prijmy.html", {"request": request, "session_id": session_id, "success_mess": success_mess, "kategorie" : kategorie, "meny": meny})
     else:
         return RedirectResponse(url="/prihlaseni", status_code=303)
    
@@ -104,7 +105,8 @@ async def zadej_prihlaseni(request: Request, session_id: str = Cookie(None)):
 async def vydaje(request: Request, success_mess: str ="",session_id: str = Cookie(None)):
     if session_id and app_logic.verify_session(session_id):
         kategorie = database.kategorie_vydaje()
-        return templates.TemplateResponse("vydaje.html", {"request": request, "session_id": session_id, "success_mess": success_mess, "kategorie": kategorie})
+        meny = database.volby_meny()
+        return templates.TemplateResponse("vydaje.html", {"request": request, "session_id": session_id, "success_mess": success_mess, "kategorie": kategorie, "meny": meny})
     else:
         return RedirectResponse(url="/prihlaseni", status_code=303)
     
@@ -190,11 +192,21 @@ async def nacti_czk():
     return data
 
 @app.get("/data_line_usd")
-async def nacti_czk():
+async def nacti_usd():
     data = database.nacti_usd_kurzy_line()
     return data
 
 @app.get("/data_line_gbp")
-async def nacti_czk():
+async def nacti_gbp():
     data = database.nacti_gbp_kurzy_line()
+    return data
+
+@app.get("/zustatky_line_chart")
+async def nacti_zustatky(session_id: str = Cookie(None)):
+    data = database.zustatky(database.get_user_id_via_session(session_id))
+    return data
+
+@app.get("/zustatky_bar")
+async def nacti_zustatky_bar(session_id: str = Cookie(None)):
+    data = database.zustatky_bar(database.get_user_id_via_session(session_id))
     return data

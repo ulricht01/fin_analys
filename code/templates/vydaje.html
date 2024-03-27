@@ -25,9 +25,9 @@
             <input type="number" name="vydaj_input" id="vydaj_input" placeholder="123456" required maxlength="10" min="1">
             <label for="mena">Měna:</label>
             <select name="mena" id="mena" required>
-                <option value="CZK">CZK</option>
-                <option value="EUR">EUR</option>
-                <option value="GBP">GBP</option>
+                {% for value in meny %}
+                <option value="{{ value }}">{{ value }}</option>
+                {% endfor %}
             </select>
             <br>
             <label for="datum_input">Datum:</label>
