@@ -43,11 +43,22 @@ function updateRates() {
                             size: 18
                         }
                     }
+                },
+                scales: {
+                    y: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)' // Zde můžete změnit barvu mřížek na osách y
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)' // Zde můžete změnit barvu mřížek na osách x
+                        }
+                    }
                 }
             }
-    
-        })
-    })
+        });
+    });
     
     fetch('/data_line_usd').then(response => response.json()).then(data => {
         const datumy = data.datumy;
@@ -82,7 +93,20 @@ function updateRates() {
                             size: 18
                         }
                     }
+                },
+                scales: {
+                    y: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)' // Zde můžete změnit barvu mřížek na osách y
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)' // Zde můžete změnit barvu mřížek na osách x
+                        }
+                    }
                 }
+            
             }
     
         })
@@ -119,6 +143,18 @@ function updateRates() {
                         text: 'Vývoj GBP dle dní',
                         font: {
                             size: 18
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)' // Zde můžete změnit barvu mřížek na osách y
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)' // Zde můžete změnit barvu mřížek na osách x
                         }
                     }
                 }
@@ -161,6 +197,18 @@ function updateRates() {
                             size: 18
                         }
                     }
+                },
+                scales: {
+                    y: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)' // Zde můžete změnit barvu mřížek na osách y
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)' // Zde můžete změnit barvu mřížek na osách x
+                        }
+                    }
                 }
             }
     
@@ -200,6 +248,18 @@ function updateRates() {
                             size: 18
                         }
                     }
+                },
+                scales: {
+                    y: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)' // Zde můžete změnit barvu mřížek na osách y
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)' // Zde můžete změnit barvu mřížek na osách x
+                        }
+                    }
                 }
             }
     
@@ -237,6 +297,18 @@ function updateRates() {
                         text: 'Průměrný vývoj DOGE',
                         font: {
                             size: 18
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)' // Zde můžete změnit barvu mřížek na osách y
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)' // Zde můžete změnit barvu mřížek na osách x
                         }
                     }
                 }

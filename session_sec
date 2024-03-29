@@ -1,15 +1,3 @@
 Šifrování session dat: Před uložením session dat do databáze je vhodné je šifrovat, aby se zabránilo čtení citlivých informací z databáze v případě, že by byla kompromitována. Použití symetrického šifrování (například AES) je běžnou praxí pro ochranu session dat.
 
-Unikátní identifikátory session: Ujistěte se, že identifikátory session jsou dostatečně náhodné a unikátní, aby se zabránilo odhadování nebo uhádnutí session identifikátoru jinými uživateli.
-
-Ochrana proti SQL injection: Používejte parametrizované dotazy (parametrizované dotazy s vazbami), abyste zabránili SQL injection útokům, kdy útočník zkouší vkládat SQL kód přímo do formulářů, aby napadl vaši databázi.
-
 Ochrana proti CSRF: Ujistěte se, že vaše aplikace obsahuje ochranu proti Cross-Site Request Forgery (CSRF) útokům. To můžete provést například pomocí CSRF tokenů, které se přidávají k formulářům a ověřují se při každém odeslání formuláře.
-
-Ochrana proti session fixation: Aby se zabránilo session fixation útokům, generujte nový session identifikátor pro každého uživatele při přihlášení a zničte starý session identifikátor.
-
-Ochrana proti session hijacking: Zabráníte session hijacking útokům tím, že udržujete sessions v databázi aktualizované a zničíte staré session data po uplynutí doby platnosti nebo po odhlášení uživatele.
-
-Ochrana proti brute force útokům: Omezte počet neúspěšných pokusů o přihlášení, aby se zabránilo brute force útokům na hesla.
-
-Bezpečnostní audit a monitorování: Pravidelně provádějte bezpečnostní audit vaší aplikace a monitorujte aktivitu uživatelů a session, aby se odhalily a řešily potenciální bezpečnostní incidenty.

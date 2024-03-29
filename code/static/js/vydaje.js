@@ -80,8 +80,16 @@ fetch('/vydaje_bar').then(response => response.json()).then(data => {
         },
         options: {
             scales: {
+                x: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)' // Zde můžete změnit barvu mřížek na osách y
+                    }
+                },
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)' // Zde můžete změnit barvu mřížek na osách y
+                    }
                 }
             },
             plugins: {
@@ -126,8 +134,16 @@ fetch('/vydaje_month_bar').then(response => response.json()).then(data => {
         },
         options: {
             scales: {
+                x: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)' // Zde můžete změnit barvu mřížek na osách y
+                    }
+                },
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)' // Zde můžete změnit barvu mřížek na osách y
+                    }
                 }
             },
             plugins: {

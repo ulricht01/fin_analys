@@ -31,6 +31,18 @@ fetch('/zustatky_line_chart').then(response => response.json()).then(data => {
                         size: 18
                     }
                 }
+            },
+            scales: {
+                y: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)' // Zde můžete změnit barvu mřížek na osách y
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)' // Zde můžete změnit barvu mřížek na osách x
+                    }
+                }
             }
         }
 
@@ -81,10 +93,16 @@ fetch('/zustatky_bar').then(response => response.json()).then(data => {
             },
             scales: {
                 x: {
-                    stacked: false // Bary vedle sebe
+                    stacked: false, // Bary vedle sebe
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)' // Zde můžete změnit barvu mřížek na osách y
+                    }
                 },
                 y: {
-                    stacked: false // Bary vedle sebe
+                    stacked: false, // Bary vedle sebe
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)' // Zde můžete změnit barvu mřížek na osách y
+                    }
                 }
             }
         }
@@ -135,10 +153,16 @@ fetch('/zustatky_bar_monthly').then(response => response.json()).then(data => {
             },
             scales: {
                 x: {
-                    stacked: false // Bary vedle sebe
+                    stacked: false, // Bary vedle sebe
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)' // Zde můžete změnit barvu mřížek na osách y
+                    }
                 },
                 y: {
-                    stacked: false // Bary vedle sebe
+                    stacked: false, // Bary vedle sebe
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)' // Zde můžete změnit barvu mřížek na osách y
+                    }
                 }
             }
         }

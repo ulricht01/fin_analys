@@ -8,6 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="static/styles/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="static/js/info.js"></script>
+    <script src="static/js/prijmy.js"></script>
     <title> Příjmy </title>
 </head>
 
@@ -27,15 +29,27 @@
                 {% endif %}
                 <label for="prijem_input"> Příjem:</label>
                 <input type="number" name="prijem_input" id="prijem_input" placeholder="123456" required min="0.1" max="10000000" step="any">
+                <div class="tooltip">
+                    <span id="info" class="icon">&#128712;</span>
+                    <span class="tooltiptext">Zde je nutno zadat kladné hodnoty!</span>
+                </div>
                 <label for="mena">Měna:</label>
                 <select name="mena" id="mena" required>
                     {% for value in meny %}
                     <option value="{{ value }}">{{ value }}</option>
                     {% endfor %}
                 </select>
+                <div class="tooltip">
+                    <span id="info" class="icon">&#128712;</span>
+                    <span class="tooltiptext">Měna bude převedena na CZK!</span>
+                </div>
                 <br>
                 <label for="datum_input">Datum:</label>
                 <input type="date" name="datum_input" id="datum_input" required>
+                <div class="tooltip">
+                    <span id="info" class="icon">&#128712;</span>
+                    <span class="tooltiptext">Zde je nutno zadat maximálně aktuální datum!</span>
+                </div>
                 <label for="cas_input">Čas:</label>
                 <input type="time" name="cas_input" id="cas_input" required>
                 <br>
@@ -60,8 +74,6 @@
         <canvas id="myChart2" name="myChart2"></canvas>
         <canvas id="myChart3", name="myChart3"></canvas>
     </div>
-
-    <script src="static/js/prijmy.js"></script>
 
 
 </body>
