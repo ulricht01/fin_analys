@@ -22,8 +22,11 @@
                 {% if success_mess %}
                 <p style="color: green;">{{ success_mess }}</p>
                 {% endif %}
+                {% if error_mess %}
+                <p style="color: red;">{{ error_mess }}</p>
+                {% endif %}
                 <label for="prijem_input"> Příjem:</label>
-                <input type="number" name="prijem_input" id="prijem_input" placeholder="123456" required maxlength="10" min="1">
+                <input type="number" name="prijem_input" id="prijem_input" placeholder="123456" required min="0.1" max="10000000" step="any">
                 <label for="mena">Měna:</label>
                 <select name="mena" id="mena" required>
                     {% for value in meny %}

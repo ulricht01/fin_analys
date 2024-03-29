@@ -7,15 +7,16 @@ import database
 import schedule
 import threading
 import hashlib
-from datetime import date
+from datetime import date, datetime
+
 
 database.vytvor_tabulky()
 app_logic.get_rates()
 schedule.every().day.at("15:00").do(app_logic.get_rates)
 schedule.every(30).minutes.do(app_logic.end_inactive_sessions)
-schedule.every(5).seconds.do(app_logic.get_shiba_inu_price)
-schedule.every(5).seconds.do(app_logic.get_bitcoin_price)
-schedule.every(5).seconds.do(app_logic.get_dogecoin_price)
+schedule.every(60).seconds.do(app_logic.get_shiba_inu_price)
+schedule.every(60).seconds.do(app_logic.get_bitcoin_price)
+schedule.every(60).seconds.do(app_logic.get_dogecoin_price)
 scheduler_thread = threading.Thread(target=app_logic.run_scheduler)
 scheduler_thread.start()
 
@@ -33,11 +34,11 @@ async def main_page(request: Request, session_id: str = Cookie(None)):
         return RedirectResponse(url="/prihlaseni", status_code=303)
     
 @app.get("/prijmy")
-async def prijmy(request: Request, success_mess: str ="", session_id: str = Cookie(None)):
+async def prijmy(request: Request, success_mess: str ="", error_mess: str="", session_id: str = Cookie(None)):
     if session_id and app_logic.verify_session(session_id):  # Check for valid session
         kategorie = database.kategorie_prijmy()
         meny = database.volby_meny()
-        return templates.TemplateResponse("prijmy.html", {"request": request, "session_id": session_id, "success_mess": success_mess, "kategorie" : kategorie, "meny": meny})
+        return templates.TemplateResponse("prijmy.html", {"request": request, "session_id": session_id, "success_mess": success_mess,"error_mess": error_mess, "kategorie" : kategorie, "meny": meny})
     else:
         return RedirectResponse(url="/prihlaseni", status_code=303)
    
@@ -50,9 +51,13 @@ async def zadej_prijem(request: Request, session_id: str = Cookie(None)):
     cas = form_data.get("cas_input")
     kategorie = form_data.get("kategorie")
     id_uzivatele = database.get_user_id_via_session(request.cookies.get('session_id'))
-    database.pridej_prijem_do_db(prijem, mena, datum, cas, kategorie, id_uzivatele)
-    success_mess = "Úspěšně přidáno do příjmů!"
-    return RedirectResponse(url=f"/prijmy?success_mess={success_mess}", status_code=303)
+    if datetime.strptime(datum, "%Y-%m-%d").date() <= date.today():
+        database.pridej_prijem_do_db(prijem, mena, datum, cas, kategorie, id_uzivatele)
+        success_mess = "Úspěšně přidáno do příjmů!"
+        return RedirectResponse(url=f"/prijmy?success_mess={success_mess}", status_code=303)
+    else:
+        error_mess = "Datum nesmí být v budoucnosti!"
+        return RedirectResponse(url=f"/prijmy?error_mess={error_mess}", status_code=303)
 
 @app.get("/registrace")
 async def registrace(request: Request, error_mess: str = "", session_id: str = Cookie(None)):
@@ -105,11 +110,11 @@ async def zadej_prihlaseni(request: Request, session_id: str = Cookie(None)):
         return RedirectResponse(url=f"/prihlaseni?error_mess={error_mess}", status_code=303)
 
 @app.get("/vydaje")
-async def vydaje(request: Request, success_mess: str ="",session_id: str = Cookie(None)):
+async def vydaje(request: Request, success_mess: str ="", error_mess: str="", session_id: str = Cookie(None)):
     if session_id and app_logic.verify_session(session_id):
         kategorie = database.kategorie_vydaje()
         meny = database.volby_meny()
-        return templates.TemplateResponse("vydaje.html", {"request": request, "session_id": session_id, "success_mess": success_mess, "kategorie": kategorie, "meny": meny})
+        return templates.TemplateResponse("vydaje.html", {"request": request, "session_id": session_id, "success_mess": success_mess, "error_mess": error_mess, "kategorie": kategorie, "meny": meny})
     else:
         return RedirectResponse(url="/prihlaseni", status_code=303)
     
@@ -122,38 +127,18 @@ async def zadej_vydaje(request: Request, session_id: str = Cookie(None)):
     cas = form_data.get("cas_input")
     kategorie = form_data.get("kategorie")
     id_uzivatele = database.get_user_id_via_session(request.cookies.get('session_id'))
-    database.pridej_vydaj_do_db(vydaj, mena, datum, cas, kategorie, id_uzivatele)
-    success_mess = "Úspěšně přidáno do výdajů!"
-    return RedirectResponse(url=f"/vydaje?success_mess={success_mess}", status_code=303)
-
+    if datetime.strptime(datum, "%Y-%m-%d").date() <= date.today():
+        database.pridej_vydaj_do_db(vydaj, mena, datum, cas, kategorie, id_uzivatele)
+        success_mess = "Úspěšně přidáno do výdajů!"
+        return RedirectResponse(url=f"/vydaje?success_mess={success_mess}", status_code=303)
+    else:
+        error_mess = "Datum nesmí být v budoucnosti!"
+        return RedirectResponse(url=f"/vydaje?error_mess={error_mess}", status_code=303)
+    
 @app.get("/kurzy")
 async def kurzy(request: Request, session_id: str = Cookie(None)):
     if session_id and app_logic.verify_session(session_id):
-        try:
-            rate_usd = database.get_usd(date.today())
-        except Exception as e:
-            rate_usd = None
-        try:
-            rate_eur = database.get_eur(date.today())
-        except Exception as e:
-            rate_eur = None
-        try:
-            rate_gbp = database.get_gbp(date.today())
-        except Exception as e:
-            rate_gbp  = None
-        try:
-            rate_shiba = database.get_shiba(date.today())
-        except Exception as e:
-            rate_shiba = None
-        try:
-            rate_bitcoin = database.get_bitcoin(date.today())
-        except Exception as e:
-            rate_bitcoin = None
-        try:
-            rate_doge = database.get_doge(date.today())
-        except Exception as e:
-            rate_doge  = None
-        return templates.TemplateResponse("kurzy.html", {"request": request, "usd_rate": rate_usd, "eur_rate": rate_eur, "gbp_rate": rate_gbp, "shiba_rate": rate_shiba, "bitcoin_rate": rate_bitcoin, "doge_rate": rate_doge, "session_id": session_id})
+        return templates.TemplateResponse("kurzy.html", {"request": request, "session_id": session_id})
     else:
         return RedirectResponse(url="/prihlaseni", status_code=303)
 
@@ -260,3 +245,38 @@ async def souhrn_nacti_pie_dat():
 async def nacti_zustatky_bar(session_id: str = Cookie(None)):
     data = database.zustatky_bar_monthly(database.get_user_id_via_session(session_id))
     return data
+
+@app.get("/api/rates")
+async def get_rates():
+    try:
+        rate_usd = database.get_usd(date.today())
+    except Exception:
+        rate_usd = None
+    try:
+        rate_eur = database.get_eur(date.today())
+    except Exception:
+        rate_eur = None
+    try:
+        rate_gbp = database.get_gbp(date.today())
+    except Exception:
+        rate_gbp  = None
+    try:
+        rate_shiba = database.get_shiba(date.today())
+    except Exception:
+        rate_shiba = None
+    try:
+        rate_bitcoin = database.get_bitcoin(date.today())
+    except Exception:
+        rate_bitcoin = None
+    try:
+        rate_doge = database.get_doge(date.today())
+    except Exception:
+        rate_doge  = None
+    return {
+        "usd_rate": rate_usd,
+        "eur_rate": rate_eur,
+        "gbp_rate": rate_gbp,
+        "shiba_rate": rate_shiba,
+        "bitcoin_rate": rate_bitcoin,
+        "doge_rate": rate_doge
+    }

@@ -17,7 +17,7 @@
         {% include "navigace.html" %}
     </header>
         <h1> Kurzy </h1>
-        <table>
+        <table id="currency-table">
             <tr> 
                 <th> Měna</th>
                 <th> CZK </th>
@@ -26,21 +26,21 @@
             </tr>
             <tr>
                 <td>USD</td>
-                <td>{{usd_rate}}</td>
+                <td id="usd-rate"></td>
                 <td>SHB</td>
-                <td>{{shiba_rate}}</td>
+                <td id="shiba-rate"></td>
             </tr>
             <tr>
                 <td>EUR</td>
-                <td>{{eur_rate}}</td>
+                <td id="eur-rate"></td>
                 <td>BTC</td>
-                <td>{{bitcoin_rate}}</td>
+                <td id="bitcoin-rate"></td>
             </tr>
             <tr>
                 <td>GBP</td>
-                <td>{{gbp_rate}}</td>
+                <td id="gbp-rate"></td>
                 <td>DOG</td>
-                <td>{{doge_rate}}</td>
+                <td id="doge-rate"></td>
             </tr>
         </table>
 
