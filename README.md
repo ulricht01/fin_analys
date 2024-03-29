@@ -32,13 +32,13 @@ uvicorn main:app --reload
 ## Struktura projektu
 
 - **/code**:
- - **/app.py**: Obsahuje backendovou část aplikace, která je vytvořena pomocí FastAPI.
- - **/database.py**: Obsahuje backendovou část aplikace, která obsluhuje databázi.
- - **/app_logic.py**: Obsahuje backendovou část aplikace, která obsahuje některé části logiky aplikace.
- - **/static**: Obsahuje frontendovou část aplikace, která obsahuje JavaScript a css.
- - **/templates**: Obsahuje frontendovou část aplikace, která obsahuje HTML a obrázky.
- - **Dockerfile**: Konfigurace pro vytvoření Docker obrazu.
- - **docker-compose.yaml**: Konfigurace pro spuštění aplikace pomocí Docker Compose.
+  - **/app.py**: Obsahuje backendovou část aplikace, která je vytvořena pomocí FastAPI.
+  - **/database.py**: Obsahuje backendovou část aplikace, která obsluhuje databázi.
+  - **/app_logic.py**: Obsahuje backendovou část aplikace, která obsahuje některé části logiky aplikace.
+  - **/static**: Obsahuje frontendovou část aplikace, která obsahuje JavaScript a css.
+  - **/templates**: Obsahuje frontendovou část aplikace, která obsahuje HTML a obrázky.
+  - **Dockerfile**: Konfigurace pro vytvoření Docker obrazu.
+  - **docker-compose.yaml**: Konfigurace pro spuštění aplikace pomocí Docker Compose.
 - **/docs**: Obsahuje dokumentaci aplikace. -> Ještě neexistuje
 
 ## Dokumentace
