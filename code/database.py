@@ -882,3 +882,98 @@ def zustatky_bar_monthly(id_uzivatel):
     vydej = [row[2] for row in data]
         
     return {"datumy": datumy, "prijem": prijem, "vydej": vydej}
+
+def nacti_prijmy_pro_tab(id_uzivatele):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT id, prijem_CZK, mena, datum, DATE_FORMAT(cas, '%H:%i') AS cas, kategorie FROM prijmy
+        WHERE id_uzivatel = %s
+        ORDER BY datum, cas
+        """, (id_uzivatele,)
+    )
+    data = cursor.fetchall()
+    conn.commit()
+    conn.close()
+    
+    ids = []
+    prijmy = []
+    meny = []
+    datumy = []
+    casy = []
+    kategorie = []
+    for row in data:
+        ids.append(row[0])
+        prijmy.append(row[1])
+        meny.append(row[2])
+        datumy.append(row[3])
+        casy.append(row[4])
+        kategorie.append(row[5])
+        
+    return {"ids" : ids,
+            "prijmy" : prijmy,
+            "meny" : meny,
+            "datumy" : datumy,
+            "casy" : casy,
+            "kategorie" : kategorie}
+
+
+def smaz_prijem(id):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        DELETE FROM prijmy
+        WHERE id = %s
+        """, (id,)
+    )
+    conn.commit()
+    conn.close()
+    
+
+
+
+def nacti_vydaje_pro_tab(id_uzivatele):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT id, vydaj_CZK, mena, datum, DATE_FORMAT(cas, '%H:%i') AS cas, kategorie FROM vydaje
+        WHERE id_uzivatel = %s
+        ORDER BY datum, cas
+        """, (id_uzivatele,)
+    )
+    data = cursor.fetchall()
+    conn.commit()
+    conn.close()
+    
+    ids = []
+    vydaje = []
+    meny = []
+    datumy = []
+    casy = []
+    kategorie = []
+    for row in data:
+        ids.append(row[0])
+        vydaje.append(row[1])
+        meny.append(row[2])
+        datumy.append(row[3])
+        casy.append(row[4])
+        kategorie.append(row[5])
+        
+    return {"ids" : ids,
+            "vydaje" : vydaje,
+            "meny" : meny,
+            "datumy" : datumy,
+            "casy" : casy,
+            "kategorie" : kategorie}
+
+
+def smaz_vydaj(id):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        DELETE FROM vydaje
+        WHERE id = %s
+        """, (id,)
+    )
+    conn.commit()
+    conn.close()

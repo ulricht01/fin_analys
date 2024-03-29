@@ -280,3 +280,39 @@ async def get_rates():
         "bitcoin_rate": rate_bitcoin,
         "doge_rate": rate_doge
     }
+
+# Pod tímto je třeba nastavit, aby nebylo přístupné bez přihlášení
+# A zároveň, aby si id uzivatele bralo ze sessionu
+@app.get("/tabulka_prijmy")
+async def tabulky_prijmy(request: Request):
+    return templates.TemplateResponse("tabulka_prijmy.html", {"request": request})
+
+@app.get("/prijmy_tabulka_data")
+async def prijmy_tabulka_data():
+    data = database.nacti_prijmy_pro_tab(4)
+    return data
+
+@app.delete("/smazat_prijem_zaznam/{id}")
+async def smazat_zaznam_prijem(id: int):
+    try:
+        database.smaz_prijem(id)
+        return {"message": "Záznam byl úspěšně smazán"}
+    except Exception as e:
+        return {"error": str(e)}
+    
+@app.get("/tabulka_vydaje")
+async def tabulky_vydaje(request: Request):
+    return templates.TemplateResponse("tabulka_vydaje.html", {"request": request})
+
+@app.get("/vydaje_tabulka_data")
+async def vydaje_tabulka_data():
+    data = database.nacti_vydaje_pro_tab(4)
+    return data
+
+@app.delete("/smazat_vydaj_zaznam/{id}")
+async def smazat_zaznam_vydaj(id: int):
+    try:
+        database.smaz_vydaj(id)
+        return {"message": "Záznam byl úspěšně smazán"}
+    except Exception as e:
+        return {"error": str(e)}
