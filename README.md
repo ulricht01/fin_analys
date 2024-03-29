@@ -9,7 +9,7 @@ Cílem této aplikace je vytvořit jednoduché prostředí pro správu osobních
 1. **Git**: Pro správu verzí a spolupráci na projektu.
 2. **Backend s FastAPI**: Pro implementaci backendové části aplikace.
 3. **Databázové schéma**: Bude využíváno databázové schéma vytvořené pro MariaDB.
-4. **Frontend s HTML, CSS, JavaScriptem**: Pro tvorbu uživatelského rozhraní a interakci s uživatelem.
+4. **Frontend s HTML, CSS, JavaScriptem a CHART.JS**: Pro tvorbu uživatelského rozhraní a interakci s uživatelem.
 5. **Docker**: Aplikace bude dockerizována pro jednoduché nasazení a správu.
 
 ## Instalace a spuštění
