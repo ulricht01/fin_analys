@@ -15,6 +15,7 @@ COPY . .
 # Nastavení proměnné prostředí pro FastAPI
 ENV PORT=8000
 ENV MODULE_NAME=app
+ENV TZ=Europe/Prague
 
 # Exponování portu, na kterém bude FastAPI naslouchat
 EXPOSE $PORT

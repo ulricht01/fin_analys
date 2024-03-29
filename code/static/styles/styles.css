@@ -151,3 +151,28 @@ header a {
 
 }
 
+
+#chart-container {
+    display: flex; 
+    align-items: center; /* Zarovná prvky ve směru kolmém na kontejner na střed */
+}
+
+#chart1 {
+margin-left: 10%;
+}
+
+#chart_xxx {
+    display: flex; /* Umožní řazení prvků vedle sebe */
+    flex-wrap: wrap; /* Při nedostatku místa na řádku se prvky přesunou na další řádek */
+    align-items: center; /* Zarovná prvky ve směru kolmém na řádek na střed */
+    height: 30%; /* Nebo jiná hodnota výšky, kterou chcete */
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+#chart_xxx canvas{
+    margin: 0 0 5% 10%;
+}
+
+
+

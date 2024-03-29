@@ -122,4 +122,3 @@ def get_dogecoin_price():
             database.pridej_krypto_do_db("DOGE", dogecoin_price_czk)
     except Exception as e:
         print("Neočekávaná chyba při získávání ceny Dogecoinu:", e)
-

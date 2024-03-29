@@ -11,7 +11,6 @@ def navaz_spojeni():
     }
     conn = mariadb.connect(**config)
     cursor = conn.cursor()
-    cursor.execute("SET time_zone = '+01:00'")
     return conn,cursor
 
 def vytvor_tabulky():
@@ -23,14 +22,14 @@ def vytvor_tabulky():
             email VARCHAR(70),
             uzivatel VARCHAR(25),
             heslo VARCHAR(70),
-            dt_create TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            dt_create DATETIME DEFAULT CURRENT_TIMESTAMP
         );
         """)
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS meny (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            mena ENUM("CZK", "USD", "EUR", "GBP"),
+            mena ENUM("CZK", "USD", "EUR", "GBP", "SHIB", "BITC", "DOGE"),
             czk DOUBLE NOT NULL,
             dt_create DATE NOT NULL DEFAULT CURRENT_DATE
         );
@@ -41,7 +40,7 @@ def vytvor_tabulky():
             id INT AUTO_INCREMENT PRIMARY KEY,
             prijem DOUBLE,
             prijem_CZK DOUBLE,
-            mena VARCHAR(3),
+            mena VARCHAR(4),
             datum DATE,
             cas TIME,
             kategorie ENUM("Výplata", "Alimenty", "Kapesné", "Dar", "Podnikání", "Ostatní"),
@@ -58,7 +57,7 @@ def vytvor_tabulky():
             id INT AUTO_INCREMENT PRIMARY KEY,
             vydaj DOUBLE,
             vydaj_CZK DOUBLE,
-            mena VARCHAR(3),
+            mena VARCHAR(4),
             datum DATE,
             cas TIME,
             kategorie ENUM("Nájem", "Elektřina", "Internet", "Mobilní tarif", "Pojištění", "Potraviny", "Ostatní"),
@@ -75,8 +74,8 @@ def vytvor_tabulky():
         CREATE TABLE IF NOT EXISTS sessions (
             id VARCHAR(255) PRIMARY KEY,
             id_uzivatel INT NOT NULL,
-            vytvoreno TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            posledni_aktivita TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            vytvoreno DATETIME DEFAULT CURRENT_TIMESTAMP,
+            posledni_aktivita DATETIME DEFAULT CURRENT_TIMESTAMP,
             CONSTRAINT `fk_sessions_uzivatele`
                 FOREIGN KEY (id_uzivatel) REFERENCES uzivatele (id)
                 ON DELETE CASCADE
@@ -105,7 +104,7 @@ def vytvor_tabulky():
             mena ENUM("SHIB", "BITC", "DOGE"),
             czk DOUBLE NOT NULL,
             dt_create DATE NOT NULL DEFAULT CURRENT_DATE,
-            time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+            time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
         );
         """)
     conn.commit()
@@ -125,9 +124,12 @@ def pridej_uzivatele_do_db(mail, uzivatel, heslo):
     
 def pridej_prijem_do_db(prijem, mena, datum, cas, kategorie, id_uzivatel):
     kurzy = {
-        "USD": get_usd(),
-        "EUR": get_eur(),
-        "GBP": get_gbp(),
+        "USD": get_usd(datum),
+        "EUR": get_eur(datum),
+        "GBP": get_gbp(datum),
+        "SHIB" : get_shiba(datum),
+        "BITC" : get_bitcoin(datum),
+        "DOGE" : get_doge(datum),
         "CZK": 1  # Kurz pro CZK je vždy 1
     }
     kurz = kurzy.get(mena)
@@ -152,9 +154,12 @@ def pridej_prijem_do_db(prijem, mena, datum, cas, kategorie, id_uzivatel):
     
 def pridej_vydaj_do_db(vydaj, mena, datum, cas, kategorie, id_uzivatel):
     kurzy = {
-        "USD": get_usd(),
-        "EUR": get_eur(),
-        "GBP": get_gbp(),
+        "USD": get_usd(datum),
+        "EUR": get_eur(datum),
+        "GBP": get_gbp(datum),
+        "SHIB" : get_shiba(datum),
+        "BITC" : get_bitcoin(datum),
+        "DOGE" : get_doge(datum),
         "CZK": 1  # Kurz pro CZK je vždy 1
     }
     
@@ -199,39 +204,41 @@ def pridej_kurz_do_db(mena, czk):
     else:
         pass
 
-def get_usd():
+def get_usd(datum):
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
         SELECT czk FROM meny
-        WHERE mena = "USD" and dt_create = %s
-        """, (date.today(),)
+        WHERE mena = "USD" and dt_create >= %s
+        ORDER BY dt_create asc
+        """, (datum,)
     )
     usd = cursor.fetchone()
     conn.commit()
     conn.close()
     return usd[0]
-    
-def get_eur():
+
+def get_eur(datum):
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
         SELECT czk FROM meny
-        WHERE mena = "EUR" and dt_create = %s
-        """, (date.today(),)
+        WHERE mena = "EUR" and dt_create >= %s
+        ORDER BY dt_create asc
+        """, (datum,)
     )
     eur = cursor.fetchone()
     conn.commit()
     conn.close()
     return eur[0]
 
-def get_gbp():
+def get_gbp(datum):
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
         SELECT czk FROM meny
-        WHERE mena = "GBP" and dt_create = %s
-        """, (date.today(),)
+        WHERE mena = "GBP" and dt_create >= %s
+        """, (datum,)
     )
     gbp = cursor.fetchone()
     conn.commit()
@@ -664,8 +671,23 @@ def pridej_krypto_do_db(mena, krypto):
         """
         INSERT INTO krypto (mena, czk)
         VALUES (%s, %s)
-        """, (mena,krypto,)
+        """, (mena,krypto)
     )
+    
+    cursor.execute(
+        """
+        DELETE FROM meny
+        WHERE mena = %s and dt_create = %s
+        """, (mena, date.today())
+    )
+    
+    cursor.execute(
+        """
+        INSERT INTO meny (mena, czk, dt_create)
+        VALUES(%s, %s, %s)
+        """, (mena, krypto, date.today())
+    )
+    
     conn.commit()
     conn.close()
 
@@ -732,3 +754,131 @@ def nacti_doge_line():
         koruny.append(row[1])
 
     return {"datumy": datumy, "koruny": koruny}
+
+def get_shiba(datum):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT czk FROM krypto
+        WHERE mena = "SHIB" and dt_create >= %s
+        ORDER BY dt_create ASC, time DESC
+        """, (datum,)
+    )
+    shiba = cursor.fetchone()
+    conn.commit()
+    conn.close()
+    return shiba[0]
+    
+def get_bitcoin(datum):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT czk FROM krypto
+        WHERE mena = "BITC" and dt_create >= %s
+        ORDER BY dt_create ASC, time DESC
+        """, (datum,)
+    )
+    bitcoin = cursor.fetchone()
+    conn.commit()
+    conn.close()
+    return bitcoin[0]
+
+def get_doge(datum):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT czk FROM krypto
+        WHERE mena = "DOGE" and dt_create >= %s
+        ORDER BY dt_create ASC, time DESC
+        """, (datum,)
+    )
+    doge = cursor.fetchone()
+    conn.commit()
+    conn.close()
+    return doge[0]
+
+def prijem_nacti_ccy_pie():
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT mena, sum(prijem_czk) as prijem FROM prijmy
+        GROUP BY 1
+        """,
+    )
+    data = cursor.fetchall()
+    conn.commit()
+    conn.close()
+    ccy = []
+    czk = []
+    
+    for row in data: 
+        ccy.append(row[0])
+        czk.append(row[1])
+    
+    return {"ccy": ccy, "czk": czk }
+
+def vyd_nacti_ccy_pie_data():
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT mena, sum(vydaj_czk) as vydaj FROM vydaje
+        GROUP BY 1
+        """,
+    )
+    data = cursor.fetchall()
+    conn.commit()
+    conn.close()
+    ccy = []
+    czk = []
+    
+    for row in data: 
+        ccy.append(row[0])
+        czk.append(row[1])
+    
+    return {"ccy": ccy, "czk": czk }
+
+def nacti_souhrn_pie():
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT typ, sum(abs(zustatek)) as vydaj FROM ucty
+        GROUP BY 1
+        """,
+    )
+    data = cursor.fetchall()
+    conn.commit()
+    conn.close()
+    labels = []
+    czk = []
+    
+    for row in data: 
+        labels.append(row[0])
+        czk.append(row[1])
+    
+    return {"labels": labels, "czk": czk }
+
+def zustatky_bar_monthly(id_uzivatel):
+    conn, cursor = navaz_spojeni()
+    cursor.execute(
+        """
+        SELECT
+            CONCAT(YEAR(dt_zapis), "/", MONTH(dt_zapis)) AS datum,
+            SUM(CASE WHEN typ = 'Příjem' THEN zustatek ELSE 0 END) AS prijem,
+            SUM(CASE WHEN typ = 'Výdaj' THEN -zustatek ELSE 0 END) AS vydej
+        FROM ucty
+        WHERE id_uzivatel = %s
+        GROUP BY 1
+        ORDER BY dt_zapis
+        """,
+        (id_uzivatel,)
+    )
+    data = cursor.fetchall()
+    
+    conn.commit()
+    conn.close()
+    
+    datumy = [row[0] for row in data]
+    prijem = [row[1] for row in data]
+    vydej = [row[2] for row in data]
+        
+    return {"datumy": datumy, "prijem": prijem, "vydej": vydej}

@@ -11,7 +11,7 @@ fetch('/vydaje_pie').then(response => response.json()).then(data => {
         data: {
             labels: labels,
             datasets: [{
-                label: '',
+                label: 'Kč',
                 data: values,
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.5)',
@@ -66,7 +66,7 @@ fetch('/vydaje_bar').then(response => response.json()).then(data => {
         data: {
             labels: labels,
             datasets: [{
-                label: '',
+                label: 'Kč',
                 data: values,
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.5)',
@@ -112,7 +112,7 @@ fetch('/vydaje_month_bar').then(response => response.json()).then(data => {
         data: {
             labels: labels,
             datasets: [{
-                label: '',
+                label: 'Kč',
                 data: values,
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.5)',
@@ -143,6 +143,60 @@ fetch('/vydaje_month_bar').then(response => response.json()).then(data => {
                 }
             }
         }
+    });
+}).catch(error => {
+    console.error('Chyba při načítání dat:', error);
+});
+
+fetch('/vydaje_ccy_pie').then(response => response.json()).then(data => {
+    const ccy = data.ccy;
+    const czk = data.czk;
+
+    // Vytvoření grafu pomocí Chart.js
+    const ctx = document.getElementById('vydaje_pie_ccy').getContext('2d');
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ccy,
+            datasets: [{
+                label: 'Kč',
+                data: czk,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.5)',
+                    'rgba(54, 162, 235, 0.5)',
+                    'rgba(255, 206, 86, 0.5)',
+                    'rgba(75, 192, 192, 0.5)',
+                    'rgba(153, 102, 255, 0.5)',
+                    'rgba(255, 159, 64, 0.5)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+            },
+            plugins:{
+            legend:{
+                display: true,
+                position: 'left'
+            },
+            title: {
+                display: true,
+                text: 'Výdaje dle měn',
+                font: {
+                    size: 18
+                }
+            }
+        }
+    }
     });
 }).catch(error => {
     console.error('Chyba při načítání dat:', error);

@@ -7,12 +7,12 @@ import database
 import schedule
 import threading
 import hashlib
-
+from datetime import date
 
 database.vytvor_tabulky()
 app_logic.get_rates()
 schedule.every().day.at("15:00").do(app_logic.get_rates)
-schedule.every(5).minutes.do(app_logic.end_inactive_sessions)
+schedule.every(30).minutes.do(app_logic.end_inactive_sessions)
 schedule.every(5).seconds.do(app_logic.get_shiba_inu_price)
 schedule.every(5).seconds.do(app_logic.get_bitcoin_price)
 schedule.every(5).seconds.do(app_logic.get_dogecoin_price)
@@ -130,18 +130,30 @@ async def zadej_vydaje(request: Request, session_id: str = Cookie(None)):
 async def kurzy(request: Request, session_id: str = Cookie(None)):
     if session_id and app_logic.verify_session(session_id):
         try:
-            rate_usd = database.get_usd()
+            rate_usd = database.get_usd(date.today())
         except Exception as e:
             rate_usd = None
         try:
-            rate_eur = database.get_eur()
+            rate_eur = database.get_eur(date.today())
         except Exception as e:
             rate_eur = None
         try:
-            rate_gbp = database.get_gbp()
+            rate_gbp = database.get_gbp(date.today())
         except Exception as e:
             rate_gbp  = None
-        return templates.TemplateResponse("kurzy.html", {"request": request, "usd_rate": rate_usd, "eur_rate": rate_eur, "gbp_rate": rate_gbp, "session_id": session_id})
+        try:
+            rate_shiba = database.get_shiba(date.today())
+        except Exception as e:
+            rate_shiba = None
+        try:
+            rate_bitcoin = database.get_bitcoin(date.today())
+        except Exception as e:
+            rate_bitcoin = None
+        try:
+            rate_doge = database.get_doge(date.today())
+        except Exception as e:
+            rate_doge  = None
+        return templates.TemplateResponse("kurzy.html", {"request": request, "usd_rate": rate_usd, "eur_rate": rate_eur, "gbp_rate": rate_gbp, "shiba_rate": rate_shiba, "bitcoin_rate": rate_bitcoin, "doge_rate": rate_doge, "session_id": session_id})
     else:
         return RedirectResponse(url="/prihlaseni", status_code=303)
 
@@ -227,4 +239,24 @@ async def nacti_shiba_lines():
 @app.get("/krypto_doge_lines")
 async def nacti_doge_lines():
     data = database.nacti_doge_line()
+    return data
+
+@app.get("/prijmy_ccy_pie")
+async def pri_nacti_ccy_pie_data():
+    data = database.prijem_nacti_ccy_pie()
+    return data
+
+@app.get("/vydaje_ccy_pie")
+async def vyd_nacti_ccy_pie_data():
+    data = database.vyd_nacti_ccy_pie_data()
+    return data
+
+@app.get("/souhrn_pie")
+async def souhrn_nacti_pie_dat():
+    data = database.nacti_souhrn_pie()
+    return data
+
+@app.get("/zustatky_bar_monthly")
+async def nacti_zustatky_bar(session_id: str = Cookie(None)):
+    data = database.zustatky_bar_monthly(database.get_user_id_via_session(session_id))
     return data

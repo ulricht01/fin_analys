@@ -18,6 +18,7 @@ services:
       MYSQL_DATABASE: fin_db
       MYSQL_USER: tomino
       MYSQL_PASSWORD: 123
+      TZ: Europe/Prague
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin

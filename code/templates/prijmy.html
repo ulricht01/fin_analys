@@ -16,34 +16,40 @@
     <header>
         {% include "navigace.html" %}
     </header>
-    <div class="input_form" name="input_form" id="input_form">
-        <form method="post" action="/prijmy">
-            {% if success_mess %}
-            <p style="color: green;">{{ success_mess }}</p>
-            {% endif %}
-            <label for="prijem_input"> Příjem:</label>
-            <input type="number" name="prijem_input" id="prijem_input" placeholder="123456" required maxlength="10" min="1">
-            <label for="mena">Měna:</label>
-            <select name="mena" id="mena" required>
-                {% for value in meny %}
-                <option value="{{ value }}">{{ value }}</option>
-                {% endfor %}
-            </select>
-            <br>
-            <label for="datum_input">Datum:</label>
-            <input type="date" name="datum_input" id="datum_input" required>
-            <label for="cas_input">Čas:</label>
-            <input type="time" name="cas_input" id="cas_input" required>
-            <br>
-            <label for="kategorie"> Kategorie:</label>
-            <select id="kategorie" name="kategorie">
-                {% for value in kategorie %}
-                <option value="{{ value }}">{{ value }}</option>
-                {% endfor %}
-            </select>
-            <br>
-            <input type="submit" name="prijmy_submit" id="prijmy_submit" value="Potvrdit">
-        </form>
+    <div id="chart-container">
+        <div class="input_form" name="input_form" id="input_form">
+            <form method="post" action="/prijmy">
+                {% if success_mess %}
+                <p style="color: green;">{{ success_mess }}</p>
+                {% endif %}
+                <label for="prijem_input"> Příjem:</label>
+                <input type="number" name="prijem_input" id="prijem_input" placeholder="123456" required maxlength="10" min="1">
+                <label for="mena">Měna:</label>
+                <select name="mena" id="mena" required>
+                    {% for value in meny %}
+                    <option value="{{ value }}">{{ value }}</option>
+                    {% endfor %}
+                </select>
+                <br>
+                <label for="datum_input">Datum:</label>
+                <input type="date" name="datum_input" id="datum_input" required>
+                <label for="cas_input">Čas:</label>
+                <input type="time" name="cas_input" id="cas_input" required>
+                <br>
+                <label for="kategorie"> Kategorie:</label>
+                <select id="kategorie" name="kategorie">
+                    {% for value in kategorie %}
+                    <option value="{{ value }}">{{ value }}</option>
+                    {% endfor %}
+                </select>
+                <br>
+                <input type="submit" name="prijmy_submit" id="prijmy_submit" value="Potvrdit">
+            </form>
+        </div>
+    
+        <div name="chart1" id="chart1">
+            <canvas id="prijmy_pie_ccy" name="prijmy_pie_ccy"></canvas>
+        </div>
     </div>
 
     <div name="chart" id="chart">

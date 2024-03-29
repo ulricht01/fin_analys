@@ -73,6 +73,7 @@ fetch('/zustatky_bar').then(response => response.json()).then(data => {
                 },
                 legend: {
                     display: true,
+                    position: 'bottom',
                     labels: {
                         fontColor: 'black'
                     }
@@ -88,4 +89,104 @@ fetch('/zustatky_bar').then(response => response.json()).then(data => {
             }
         }
     });
+});
+
+fetch('/zustatky_bar_monthly').then(response => response.json()).then(data => {
+    const datumy = data.datumy;
+    const prijem = data.prijem;
+    const vydej = data.vydej;
+
+    const ctx = document.getElementById('souhrn_bar_monthly').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: datumy,
+            datasets: [{
+                label: 'Příjem',
+                data: prijem,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }, {
+                label: 'Výdaj',
+                data: vydej,
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'x', // Horizontální sloupcový graf
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Vývoj příjmů a výdajů',
+                    font: {
+                        size: 18
+                    }
+                },
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: {
+                        fontColor: 'black'
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    stacked: false // Bary vedle sebe
+                },
+                y: {
+                    stacked: false // Bary vedle sebe
+                }
+            }
+        }
+    });
+});
+
+fetch('/souhrn_pie').then(response => response.json()).then(data => {
+    const labels = data.labels;
+    const czk = data.czk;
+
+    // Vytvoření grafu pomocí Chart.js
+    const ctx = document.getElementById('souhrn_pie_chart').getContext('2d');
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Kč',
+                data: czk,
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.5)',
+                    'rgba(255, 99, 132, 0.5)'
+                ],
+                borderColor: [
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 99, 132, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+            },
+            plugins:{
+            legend:{
+                display: true,
+                position: 'bottom'
+            },
+            title: {
+                display: true,
+                text: 'Příjmy vs Výdaje',
+                font: {
+                    size: 18
+                }
+            }
+        }
+    }
+    });
+}).catch(error => {
+    console.error('Chyba při načítání dat:', error);
 });
