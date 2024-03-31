@@ -284,12 +284,15 @@ async def get_rates():
 # Pod tímto je třeba nastavit, aby nebylo přístupné bez přihlášení
 # A zároveň, aby si id uzivatele bralo ze sessionu
 @app.get("/tabulka_prijmy")
-async def tabulky_prijmy(request: Request):
-    return templates.TemplateResponse("tabulka_prijmy.html", {"request": request})
+async def tabulky_prijmy(request: Request, session_id: str = Cookie(None)):
+    if session_id and app_logic.verify_session(session_id):
+        return templates.TemplateResponse("tabulka_prijmy.html", {"request": request, "session_id": session_id})
+    else:
+        return RedirectResponse(url="/prihlaseni", status_code=303)
 
 @app.get("/prijmy_tabulka_data")
-async def prijmy_tabulka_data():
-    data = database.nacti_prijmy_pro_tab(4)
+async def prijmy_tabulka_data(session_id: str = Cookie(None)):
+    data = database.nacti_prijmy_pro_tab(database.get_user_id_via_session(session_id))
     return data
 
 @app.delete("/smazat_prijem_zaznam/{id}")
@@ -301,12 +304,15 @@ async def smazat_zaznam_prijem(id: int):
         return {"error": str(e)}
     
 @app.get("/tabulka_vydaje")
-async def tabulky_vydaje(request: Request):
-    return templates.TemplateResponse("tabulka_vydaje.html", {"request": request})
-
+async def tabulky_vydaje(request: Request, session_id: str = Cookie(None)):
+    if session_id and app_logic.verify_session(session_id):
+        return templates.TemplateResponse("tabulka_vydaje.html", {"request": request, "session_id": session_id})
+    else:
+        return RedirectResponse(url="/prihlaseni", status_code=303)
+    
 @app.get("/vydaje_tabulka_data")
-async def vydaje_tabulka_data():
-    data = database.nacti_vydaje_pro_tab(4)
+async def vydaje_tabulka_data(session_id: str = Cookie(None)):
+    data = database.nacti_vydaje_pro_tab(database.get_user_id_via_session(session_id))
     return data
 
 @app.delete("/smazat_vydaj_zaznam/{id}")

@@ -45,6 +45,7 @@ def vytvor_tabulky():
             cas TIME,
             kategorie ENUM("Výplata", "Alimenty", "Kapesné", "Dar", "Podnikání", "Ostatní"),
             id_uzivatel INT NOT NULL,
+            time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             CONSTRAINT `fk_prijmy_uzivatele`
                 FOREIGN KEY (id_uzivatel) REFERENCES uzivatele (id)
                 ON DELETE CASCADE
@@ -62,6 +63,7 @@ def vytvor_tabulky():
             cas TIME,
             kategorie ENUM("Nájem", "Elektřina", "Internet", "Mobilní tarif", "Pojištění", "Potraviny", "Ostatní"),
             id_uzivatel INT NOT NULL,
+            time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             CONSTRAINT `fk_vydaje_uzivatele`
                 FOREIGN KEY (id_uzivatel) REFERENCES uzivatele (id)
                 ON DELETE CASCADE
@@ -90,6 +92,8 @@ def vytvor_tabulky():
             dt_zapis DATE,
             zustatek DOUBLE DEFAULT 0,
             typ ENUM("Příjem", "Výdaj"),
+            cas TIME,
+            time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             CONSTRAINT `fk_ucty_uzivatele`
                 FOREIGN KEY (id_uzivatel) REFERENCES uzivatele (id)
                 ON DELETE CASCADE
@@ -145,9 +149,9 @@ def pridej_prijem_do_db(prijem, mena, datum, cas, kategorie, id_uzivatel):
     
     cursor.execute(
         """
-        INSERT INTO ucty (id_uzivatel, dt_zapis, zustatek, typ)
-        VALUES (%s, %s, %s, "Příjem")
-        """, (id_uzivatel, datum, prijem_czk)
+        INSERT INTO ucty (id_uzivatel, dt_zapis, cas, zustatek, typ)
+        VALUES (%s, %s, %s, %s,"Příjem")
+        """, (id_uzivatel, datum, cas, prijem_czk)
     )
     conn.commit()
     conn.close()
@@ -175,9 +179,9 @@ def pridej_vydaj_do_db(vydaj, mena, datum, cas, kategorie, id_uzivatel):
     
     cursor.execute(
         """
-        INSERT INTO ucty (id_uzivatel, dt_zapis, zustatek, typ)
-        VALUES (%s, %s, %s, "Výdaj")
-        """, (id_uzivatel, datum, -vydaj_czk)
+        INSERT INTO ucty (id_uzivatel, dt_zapis, cas, zustatek, typ)
+        VALUES (%s, %s, %s,%s, "Výdaj")
+        """, (id_uzivatel, datum, cas, -vydaj_czk)
     )
     conn.commit()
     conn.close()
@@ -922,9 +926,27 @@ def smaz_prijem(id):
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
+        SELECT datum, cas, id_uzivatel, time
+        FROM prijmy
+        WHERE id = %s
+        """, (id,)
+    )
+    result = cursor.fetchone()
+
+    datum, cas, id_uzivatel, zapis = result[0], result[1], result[2], result[3]
+    
+    cursor.execute(
+        """
         DELETE FROM prijmy
         WHERE id = %s
         """, (id,)
+    )
+    
+    cursor.execute(
+        """
+        DELETE FROM ucty
+        WHERE id_uzivatel = %s and cas = %s and dt_zapis = %s and time = %s
+        """, (id_uzivatel, cas, datum, zapis)
     )
     conn.commit()
     conn.close()
@@ -971,9 +993,27 @@ def smaz_vydaj(id):
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
+        SELECT datum, cas, id_uzivatel, time
+        FROM vydaje
+        WHERE id = %s
+        """, (id,)
+    )
+    result = cursor.fetchone()
+    
+    datum, cas, id_uzivatel, zapis = result[0], result[1], result[2], result[3]
+    
+    cursor.execute(
+        """
         DELETE FROM vydaje
         WHERE id = %s
         """, (id,)
+    )
+    
+    cursor.execute(
+        """
+        DELETE FROM ucty
+        WHERE id_uzivatel = %s and cas = %s and dt_zapis = %s and time = %s
+        """, (id_uzivatel, cas, datum, zapis)
     )
     conn.commit()
     conn.close()

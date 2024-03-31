@@ -173,3 +173,65 @@ margin-left: 10%;
 #chart_xxx canvas{
     margin: 0 0 5% 10%;
 }
+
+
+#tabulka-container table {
+    width: 80%;
+    border-collapse: collapse;
+}
+
+#tabulka-container th,
+#tabulka-container td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid white;
+    color: white;
+}
+
+#tabulka-container th {
+    background-color: #333;
+}
+
+#tabulka-container tr:nth-child(even) {
+    background-color: #444;
+}
+
+#tabulka-container tr:hover {
+    background-color: #555;
+}
+
+#tabulka-container button{  
+    background-color: #f55050;
+    color: aliceblue; 
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    font-family: cursive;
+}
+
+.big-button {
+    padding: 70px 15px; /* Velikost paddingu určuje velikost tlačítka */
+    font-size: 16px; /* Velikost písma */
+    font-family: cursive;
+    background-color: #f09000; /* Barva pozadí */
+    color: white; /* Barva textu */
+    border: none; /* Odstranění ohraničení */
+    border-radius: 8px; /* Oblé rohy */
+    cursor: pointer; /* Ukazatel myši */
+    transition: background-color 0.3s ease; /* Animace při najetí myší */
+}
+
+.big-button:hover {
+    background-color: #e06c00; /* Barva pozadí po najetí myší */
+}
+
+.back-arrow {
+    font-size: 32px;
+    cursor: pointer;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: aliceblue;
+    text-decoration: none;
+
+}
