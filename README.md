@@ -24,12 +24,13 @@ git clone <url-repozitáře>
 pip install -r requirements.txt
 ````
 
-3. Spusťte aplikaci:
+3. Spusťte aplikaci: (Při prvním spuštění je třeba počkat cca minutu na načtení db a pak pustit znovu)
 ````
 docker compose up
 ````
-Nebo
+Nebo (Je potřeba zakomentovat v docker-compose.yaml app service a v database.py odkomentovat '"host": "localhost"' a zakomentovat  '"host': 'mariadb"')
 ````
+docker compose up
 py -m uvicorn app:app --host 0.0.0.0 --port 8000
 ````
 
