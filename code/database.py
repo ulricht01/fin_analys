@@ -5,7 +5,8 @@ def navaz_spojeni():
     config = {
         "user": "root",
         "password": "secret",
-        "host": "localhost",
+        "host": "mariadb",
+        #"host": "localhost",
         "port": 3306,
         "database": "fin_db",
     }

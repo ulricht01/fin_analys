@@ -1,7 +1,10 @@
-FROM python:3.9-slim
+FROM python:3.10-alpine
 
 # Nastavení pracovního adresáře ve složce /code
 WORKDIR /code
+
+RUN apk update && \
+    apk add --no-cache mariadb-connector-c-dev build-base
 
 # Kopírování souboru s požadavky do pracovního adresáře
 COPY requirements.txt .

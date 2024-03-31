@@ -1,3 +1,0 @@
-Šifrování session dat: Před uložením session dat do databáze je vhodné je šifrovat, aby se zabránilo čtení citlivých informací z databáze v případě, že by byla kompromitována. Použití symetrického šifrování (například AES) je běžnou praxí pro ochranu session dat.
-
-Ochrana proti CSRF: Ujistěte se, že vaše aplikace obsahuje ochranu proti Cross-Site Request Forgery (CSRF) útokům. To můžete provést například pomocí CSRF tokenů, které se přidávají k formulářům a ověřují se při každém odeslání formuláře.
