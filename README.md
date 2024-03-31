@@ -26,7 +26,11 @@ pip install -r requirements.txt
 
 3. Spusťte aplikaci:
 ````
-uvicorn main:app --reload
+docker compose up
+````
+Nebo
+````
+py -m uvicorn app:app --host 0.0.0.0 --port 8000
 ````
 
 ## Struktura projektu
