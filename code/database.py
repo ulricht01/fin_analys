@@ -512,6 +512,7 @@ def nacti_eur_kurzy_line():
         """
         SELECT DATE_FORMAT(dt_create, '%d.%m.%Y') AS datum, czk FROM meny
         WHERE mena = 'EUR'
+        ORDER BY dt_create
         """
     )
     data = cursor.fetchall()
@@ -531,6 +532,7 @@ def nacti_usd_kurzy_line():
         """
         SELECT DATE_FORMAT(dt_create, '%d.%m.%Y') AS datum, czk FROM meny
         WHERE mena = 'USD'
+        ORDER BY dt_create
         """
     )
     data = cursor.fetchall()
@@ -550,6 +552,7 @@ def nacti_gbp_kurzy_line():
         """
         SELECT DATE_FORMAT(dt_create, '%d.%m.%Y') AS datum, czk FROM meny
         WHERE mena = 'GBP'
+        ORDER BY dt_create
         """
     )
     data = cursor.fetchall()
@@ -705,6 +708,7 @@ def nacti_bitc_line():
         FROM krypto
         WHERE mena = 'BITC'
         GROUP BY 1
+        ORDER BY dt_create
         """
     )
     data = cursor.fetchall()
@@ -726,6 +730,7 @@ def nacti_shiba_line():
         FROM krypto
         WHERE mena = 'SHIB'
         GROUP BY 1
+        ORDER BY dt_create
         """
     )
     data = cursor.fetchall()
@@ -743,11 +748,11 @@ def nacti_doge_line():
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
-        SELECT DATE_FORMAT(dt_create, '%d.%m.%Y') AS datum, avg(czk) as czk, dt_create
+        SELECT DATE_FORMAT(dt_create, '%d.%m.%Y') AS datum, avg(czk) as czk
         FROM krypto
         WHERE mena = 'DOGE'
         GROUP BY 1
-        ORDER BY 3
+        ORDER BY dt_create
         
         """
     )
@@ -757,7 +762,7 @@ def nacti_doge_line():
     datumy = []
     koruny = []
     for row in data:
-        datumy.append(row[2])
+        datumy.append(row[0])
         koruny.append(row[1])
         
     return {"datumy": datumy, "koruny": koruny}
