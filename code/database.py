@@ -743,10 +743,12 @@ def nacti_doge_line():
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
-        SELECT DATE_FORMAT(dt_create, '%d.%m.%Y') AS datum, avg(czk) as czk 
+        SELECT DATE_FORMAT(dt_create, '%d.%m.%Y') AS datum, avg(czk) as czk, dt_create
         FROM krypto
         WHERE mena = 'DOGE'
         GROUP BY 1
+        ORDER BY 3
+        
         """
     )
     data = cursor.fetchall()
@@ -755,9 +757,9 @@ def nacti_doge_line():
     datumy = []
     koruny = []
     for row in data:
-        datumy.append(row[0])
+        datumy.append(row[2])
         koruny.append(row[1])
-
+        
     return {"datumy": datumy, "koruny": koruny}
 
 def get_shiba(datum):
