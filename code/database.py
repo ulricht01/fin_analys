@@ -410,9 +410,10 @@ def prijmy_bar_data(id_uzivatel):
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
-        SELECT DATE_FORMAT(datum, '%d.%m.%Y') AS datum, sum(prijem_czk) as prijem FROM prijmy
+        SELECT DATE_FORMAT(datum, '%d.%m.%Y') AS datum, sum(prijem_czk), datum as prijem FROM prijmy
         WHERE id_uzivatel = %s
         GROUP BY 1
+        ORDER BY 3
         """, (id_uzivatel,)
     )
     data = cursor.fetchall()
@@ -470,9 +471,10 @@ def vydaje_bar_data(id_uzivatel):
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
-        SELECT DATE_FORMAT(datum, '%d.%m.%Y') AS datum, sum(vydaj_czk) as vydaj FROM vydaje
+        SELECT DATE_FORMAT(datum, '%d.%m.%Y') AS datum, sum(vydaj_czk), datum as vydaj FROM vydaje
         WHERE id_uzivatel = %s
         GROUP BY 1
+        ORDER BY 3
         """, (id_uzivatel,)
     )
     data = cursor.fetchall()
@@ -809,13 +811,14 @@ def get_doge(datum):
     conn.close()
     return doge[0]
 
-def prijem_nacti_ccy_pie():
+def prijem_nacti_ccy_pie(uzivatel_id):
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
         SELECT mena, sum(prijem_czk) as prijem FROM prijmy
+        WHERE id_uzivatel = %s
         GROUP BY 1
-        """,
+        """,(uzivatel_id,)
     )
     data = cursor.fetchall()
     conn.commit()
@@ -829,13 +832,14 @@ def prijem_nacti_ccy_pie():
     
     return {"ccy": ccy, "czk": czk }
 
-def vyd_nacti_ccy_pie_data():
+def vyd_nacti_ccy_pie_data(uzivatel_id):
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
         SELECT mena, sum(vydaj_czk) as vydaj FROM vydaje
+        WHERE id_uzivatel = %s
         GROUP BY 1
-        """,
+        """,(uzivatel_id,)
     )
     data = cursor.fetchall()
     conn.commit()
@@ -849,13 +853,14 @@ def vyd_nacti_ccy_pie_data():
     
     return {"ccy": ccy, "czk": czk }
 
-def nacti_souhrn_pie():
+def nacti_souhrn_pie(uzivatel_id):
     conn, cursor = navaz_spojeni()
     cursor.execute(
         """
         SELECT typ, sum(abs(zustatek)) as vydaj FROM ucty
+        WHERE id_uzivatel = %s
         GROUP BY 1
-        """,
+        """,(uzivatel_id,)
     )
     data = cursor.fetchall()
     conn.commit()
@@ -1025,3 +1030,28 @@ def smaz_vydaj(id):
     )
     conn.commit()
     conn.close()
+
+def xxx():
+    conn, cursor = navaz_spojeni()
+    cursor.execute("""
+    SELECT avg(czk) as avg_czk FROM krypto
+    WHERE mena = "SHIB" and dt_create > CURDATE() - INTERVAL 60 DAY 
+                   """)
+    data = cursor.fetchone()
+    conn.commit()
+    conn.close()
+        
+    return {'hodnota': data}, data[0]
+    
+def xxx2():
+    conn, cursor = navaz_spojeni()
+    cursor.execute("""
+    SELECT czk FROM krypto
+    WHERE mena = "SHIB" and dt_create = CURDATE()
+                   """)
+    data = cursor.fetchone()
+    conn.commit()
+    conn.close()
+
+        
+    return {'hodnota': data}, data[0]

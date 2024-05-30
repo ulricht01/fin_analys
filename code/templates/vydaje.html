@@ -22,6 +22,7 @@
     <div id="chart-container">
         <div class="input_form" name="input_form" id="input_form">
             <form method="post" action="/vydaje">
+                {{% mess %}}
                 {% if success_mess %}
                 <p style="color: green;">{{ success_mess }}</p>
                 {% endif %}
@@ -29,7 +30,8 @@
                 <p style="color: red;">{{ error_mess }}</p>
                 {% endif %}
                 <label for="vydaj_input"> Výdaj:</label>
-                <input type="number" name="vydaj_input" id="vydaj_input" placeholder="123456" required min="0.1" max="10000000" step="any">
+                <input type="number" name="vydaj_input" id="vydaj_input" placeholder="123456" required min="0.1"
+                    max="10000000" step="any">
                 <div class="tooltip">
                     <span id="info" class="icon">&#128712;</span>
                     <span class="tooltiptext">Zde je nutno zadat kladné hodnoty!</span>
@@ -77,7 +79,7 @@
     <div name="chart" id="chart">
         <canvas id="myChart" name="myChart"></canvas>
         <canvas id="myChart2" name="myChart2"></canvas>
-        <canvas id="myChart3", name="myChart3"></canvas>
+        <canvas id="myChart3" , name="myChart3"></canvas>
     </div>
 
 

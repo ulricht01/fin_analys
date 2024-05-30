@@ -143,9 +143,10 @@ async def kurzy(request: Request, session_id: str = Cookie(None)):
         return RedirectResponse(url="/prihlaseni", status_code=303)
 
 @app.get("/souhrn")
-async def souhrn(request: Request, session_id: str = Cookie(None)):
+async def souhrn(request: Request, mess: str = "", session_id: str = Cookie(None)):
     if session_id and app_logic.verify_session(session_id):
-        return templates.TemplateResponse("souhrn.html", {"request": request, "session_id": session_id})
+        return templates.TemplateResponse("souhrn.html", {"request": request, "session_id": session_id, "mess":mess})
+
     else:
         return RedirectResponse(url="/prihlaseni", status_code=303)
 
@@ -227,18 +228,18 @@ async def nacti_doge_lines():
     return data
 
 @app.get("/prijmy_ccy_pie")
-async def pri_nacti_ccy_pie_data():
-    data = database.prijem_nacti_ccy_pie()
+async def pri_nacti_ccy_pie_data(session_id: str = Cookie(None)):
+    data = database.prijem_nacti_ccy_pie(database.get_user_id_via_session(session_id))
     return data
 
 @app.get("/vydaje_ccy_pie")
-async def vyd_nacti_ccy_pie_data():
-    data = database.vyd_nacti_ccy_pie_data()
+async def vyd_nacti_ccy_pie_data(session_id: str = Cookie(None)):
+    data = database.vyd_nacti_ccy_pie_data(database.get_user_id_via_session(session_id))
     return data
 
 @app.get("/souhrn_pie")
-async def souhrn_nacti_pie_dat():
-    data = database.nacti_souhrn_pie()
+async def souhrn_nacti_pie_dat(session_id: str = Cookie(None)):
+    data = database.nacti_souhrn_pie(database.get_user_id_via_session(session_id))
     return data
 
 @app.get("/zustatky_bar_monthly")
@@ -322,3 +323,26 @@ async def smazat_zaznam_vydaj(id: int):
         return {"message": "Záznam byl úspěšně smazán"}
     except Exception as e:
         return {"error": str(e)}
+    
+@app.get("/xxx")
+async def xxx():
+    data = database.xxx()
+    return data
+
+@app.get("/xxx2")
+async def xxx2():
+    data = database.xxx2()
+    return data
+
+@app.get("/porovnání")
+async def porovnani():
+    _, data1 = database.xxx()
+    _, data2 = database.xxx2()
+
+    procentualni_data1 = data1*1.05
+
+    if data2 >= procentualni_data1:
+        return "Je větší nebo rovno 5%"
+    else:
+        return "Je menší než 5%"
+
